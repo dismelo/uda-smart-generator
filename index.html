@@ -889,6 +889,15 @@
         @media (max-width: 640px) {
             .btn-lg { min-width: auto; width: 100%; }
             .logo-subtitle { display: none; }
+            .progress-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            .progress-header > div {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
@@ -1331,6 +1340,34 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                 showToast('Download avviato', 'success');
             };
             
+            const handleReset = () => {
+                if (window.confirm('⚠️ Sei sicuro di voler resettare tutto il form? Tutti i dati inseriti verranno persi.')) {
+                    setFormData({
+                        disciplina: '',
+                        classe: '',
+                        durata: 10,
+                        titolo: '',
+                        competenze: [],
+                        obiettivi: '',
+                        prerequisiti: [],
+                        metodologie: [],
+                        strumenti: [],
+                        valutazione: '',
+                        contestoClasse: '',
+                        bes: [],
+                        strategiePersonalizzazione: '',
+                        interdisciplinarita: []
+                    });
+                    setShowOutput(false);
+                    setGeneratedPrompt('');
+                    setPrerequisitoInput('');
+                    setInterdisciplinaritaInput('');
+                    localStorage.removeItem('uda_draft');
+                    showToast('Form resettato con successo', 'info');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+            
             const canGenerate = formData.disciplina && formData.classe && formData.titolo && 
                                formData.competenze.length > 0 && formData.obiettivi && 
                                formData.metodologie.length > 0 && formData.valutazione;
@@ -1382,7 +1419,34 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                         <div className="progress-card">
                             <div className="progress-header">
                                 <span style={{fontWeight: 600, color: 'var(--text-primary)'}}>Progresso compilazione:</span>
-                                <span style={{fontWeight: 700, color: 'var(--primary)'}}>{Math.round(progress)}%</span>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                    <span style={{fontWeight: 700, color: 'var(--primary)'}}>{Math.round(progress)}%</span>
+                                    <button 
+                                        onClick={handleReset}
+                                        className="btn"
+                                        style={{
+                                            padding: '0.5rem 1rem',
+                                            fontSize: '0.875rem',
+                                            background: 'transparent',
+                                            border: '2px solid var(--error)',
+                                            color: 'var(--error)',
+                                            borderRadius: '0.5rem',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.background = 'var(--error)';
+                                            e.target.style.color = 'white';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.background = 'transparent';
+                                            e.target.style.color = 'var(--error)';
+                                        }}
+                                        title="Cancella tutti i dati e ricomincia da zero"
+                                    >
+                                        🔄 Reset
+                                    </button>
+                                </div>
                             </div>
                             <div className="progress-bar-container">
                                 <div className={`progress-bar ${getProgressBarColor()}`} style={{width: `${progress}%`}}></div>
@@ -1769,23 +1833,52 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                         
                         {/* Generate Button */}
                         <div className="text-center mb-12">
-                            <button 
-                                onClick={generatePrompt}
-                                disabled={!canGenerate || isGenerating}
-                                className={`btn btn-lg ${canGenerate && !isGenerating ? 'btn-accent gradient-accent animate-pulse-slow' : ''}`}
-                                style={{boxShadow: canGenerate && !isGenerating ? 'var(--shadow-xl)' : 'none'}}
-                            >
-                                {isGenerating ? (
-                                    <>
-                                        <span className="spinner"></span>
-                                        <span>Generazione in corso...</span>
-                                    </>
-                                ) : canGenerate ? (
-                                    '✨ Genera il mio Prompt UDA'
-                                ) : (
-                                    'Completa tutti i campi obbligatori'
-                                )}
-                            </button>
+                            <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center'}}>
+                                <button 
+                                    onClick={generatePrompt}
+                                    disabled={!canGenerate || isGenerating}
+                                    className={`btn btn-lg ${canGenerate && !isGenerating ? 'btn-accent gradient-accent animate-pulse-slow' : ''}`}
+                                    style={{boxShadow: canGenerate && !isGenerating ? 'var(--shadow-xl)' : 'none'}}
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <span className="spinner"></span>
+                                            <span>Generazione in corso...</span>
+                                        </>
+                                    ) : canGenerate ? (
+                                        '✨ Genera il mio Prompt UDA'
+                                    ) : (
+                                        'Completa tutti i campi obbligatori'
+                                    )}
+                                </button>
+                                
+                                <button 
+                                    onClick={handleReset}
+                                    className="btn"
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        fontSize: '1rem',
+                                        background: 'transparent',
+                                        border: '2px solid var(--error)',
+                                        color: 'var(--error)',
+                                        borderRadius: '0.5rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        minWidth: '200px'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.target.style.background = 'var(--error)';
+                                        e.target.style.color = 'white';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.background = 'transparent';
+                                        e.target.style.color = 'var(--error)';
+                                    }}
+                                    title="Cancella tutti i dati e ricomincia da zero"
+                                >
+                                    🔄 Reset Form
+                                </button>
+                            </div>
                         </div>
                         
                         {/* Output Section */}
