@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDA Smart Generator - Crea UDA con l'Intelligenza Artificiale</title>
+    <meta name="description" content="Strumento professionale per generare Unità di Apprendimento personalizzate. Veloce, intuitivo, basato su AI.">
+    <meta name="author" content="Prof.ssa Silvia Selvaggi">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="UDA Smart Generator">
+    <meta property="og:description" content="Crea UDA personalizzate con l'intelligenza artificiale">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        /* === RESET E BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        /* === VARIABILI CSS === */
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2d4a7c;
+            --primary-dark: #0f1e3a;
+            --secondary: #2563eb;
+            --secondary-light: #3b82f6;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+            
+            --transition-fast: 0.15s;
+            --transition-base: 0.3s;
+            --transition-slow: 0.5s;
+        }
+        
+        /* === UTILITY CLASSES === */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%);
+        }
+        
+        .gradient-accent {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .gradient-hero {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        }
+        
+        /* === ANIMAZIONI === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .animate-fadeInUp { animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        .animate-pulse-slow { animation: pulse 2s infinite; }
+        
+        /* === HEADER === */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            padding: 0 1.5rem;
+            max-width: 1536px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .nav-desktop {
+            display: none;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: color var(--transition-base);
+            padding: 0.5rem 0;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+        
+        .nav-link-active {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 3px solid var(--accent);
+        }
+        
+        .menu-button {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: block;
+        }
+        
+        .menu-mobile {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 85%;
+            max-width: 320px;
+            background: white;
+            box-shadow: var(--shadow-xl);
+            transform: translateX(100%);
+            transition: transform var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            padding: 1.5rem;
+        }
+        
+        .menu-mobile.open {
+            transform: translateX(0);
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-base);
+        }
+        
+        .menu-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* === HERO === */
+        .hero {
+            padding: 7rem 1rem 3rem;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .hero-image-container {
+            max-width: 56rem;
+            margin: 0 auto;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .hero-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .hero-image svg {
+            width: 6rem;
+            height: 6rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-image-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-icon.blue { background: #dbeafe; color: #2563eb; }
+        .card-icon.green { background: #d1fae5; color: #059669; }
+        .card-icon.purple { background: #e9d5ff; color: #9333ea; }
+        .card-icon.orange { background: #fed7aa; color: #ea580c; }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* === GRID === */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .grid-1 { grid-template-columns: 1fr; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        
+        /* === FORMS === */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all var(--transition-base);
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-hint {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .form-error {
+            font-size: 0.875rem;
+            color: var(--error);
+            margin-top: 0.25rem;
+        }
+        
+        .form-warning {
+            font-size: 0.875rem;
+            color: var(--warning);
+            margin-top: 0.25rem;
+        }
+        
+        /* === CHECKBOX E RADIO === */
+        .checkbox-container,
+        .radio-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background var(--transition-base);
+        }
+        
+        .checkbox-container:hover,
+        .radio-container:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .checkbox-custom,
+        .radio-custom {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-base);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .checkbox-custom {
+            border-radius: 4px;
+        }
+        
+        .radio-custom {
+            border-radius: 50%;
+        }
+        
+        .checkbox-custom:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .radio-custom:checked {
+            border-color: var(--accent);
+        }
+        
+        .radio-custom:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* === RANGE SLIDER === */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+        
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+        }
+        
+        .range-value {
+            padding: 0.5rem 1rem;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        /* === TAGS === */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .tag.blue { background: #dbeafe; color: #1e40af; }
+        .tag.purple { background: #e9d5ff; color: #7e22ce; }
+        
+        .tag-remove {
+            margin-left: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: inherit;
+            font-weight: 700;
+            padding: 0;
+        }
+        
+        .tag-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* === BUTTONS === */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-light);
+        }
+        
+        .btn-accent {
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            min-width: 300px;
+        }
+        
+        .btn:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        
+        /* === PROGRESS BAR === */
+        .progress-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+            position: sticky;
+            top: 5rem;
+            z-index: 30;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.8s ease-out;
+        }
+        
+        .progress-bar.red { background: #ef4444; }
+        .progress-bar.yellow { background: #eab308; }
+        .progress-bar.green { background: #10b981; }
+        
+        /* === BADGES === */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge.green { background: #d1fae5; color: #065f46; }
+        .badge.blue { background: #dbeafe; color: #1e40af; }
+        .badge.purple { background: #e9d5ff; color: #7e22ce; }
+        .badge.orange { background: #fed7aa; color: #9a3412; }
+        
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            box-shadow: var(--shadow-xl);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .toast.warning { background: #f59e0b; }
+        .toast.info { background: #3b82f6; }
+        
+        /* === SPINNER === */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        /* === OUTPUT SECTION === */
+        .output-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .output-content {
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .output-content pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .stat-card.blue { background: #dbeafe; }
+        .stat-card.green { background: #d1fae5; }
+        .stat-card.purple { background: #e9d5ff; }
+        .stat-card.amber { background: #fef3c7; }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 0.25rem;
+        }
+        
+        .stat-card.blue .stat-value { color: #1e40af; }
+        .stat-card.green .stat-value { color: #065f46; }
+        .stat-card.purple .stat-value { color: #7e22ce; }
+        .stat-card.amber .stat-value { color: #92400e; }
+        
+        /* === FOOTER === */
+        .footer {
+            background: #111827;
+            color: rgba(255,255,255,0.9);
+            margin-top: 5rem;
+        }
+        
+        .footer-content {
+            max-width: 1536px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 2rem;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color var(--transition-base);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 2rem;
+            text-align: center;
+        }
+        
+        .footer-bottom p {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-bottom strong {
+            color: white;
+        }
+        
+        .cc-license {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        .cc-license img {
+            height: 32px;
+        }
+        
+        .footer-bottom a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        
+        .footer-bottom a:hover {
+            color: #93c5fd;
+        }
+        
+        /* === SPACING UTILITIES === */
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+        
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        
+        /* === RESPONSIVE === */
+        @media (min-width: 640px) {
+            .hero-title { font-size: 2.5rem; }
+            .logo-subtitle { display: block; }
+        }
+        
+        @media (min-width: 768px) {
+            .menu-button { display: none; }
+            .nav-desktop { display: flex; }
+            .header-content { height: 72px; }
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (min-width: 1024px) {
+            .hero-title { font-size: 3.5rem; }
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        @media (max-width: 640px) {
+            .btn-lg { min-width: auto; width: 100%; }
+            .logo-subtitle { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Toast Component
+        function Toast({ message, type = 'success', onClose }) {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+            
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '⚠',
+                info: 'ℹ️'
+            };
+            
+            return (
+                <div className={`toast ${type}`}>
+                    <span style={{fontSize: '1.25rem'}}>{icons[type]}</span>
+                    <span>{message}</span>
+                </div>
+            );
+        }
+        
+        // Header Component
+        function Header({ onMenuToggle }) {
+            return (
+                <header className="header">
+                    <div className="header-content">
+                        <div className="logo-container">
+                            <div className="logo-icon gradient-primary">U</div>
+                            <div>
+                                <div className="logo-text">UDA Smart</div>
+                                <div className="logo-subtitle">Smart Learning Design</div>
+                            </div>
+                        </div>
+                        
+                        <nav className="nav-desktop">
+                            <a href="#" className="nav-link">🏠 Home page</a>
+                            <a href="#" className="nav-link">🔬 UDA Lab</a>
+                            <a href="#" className="nav-link nav-link-active">⚡ UDA Smart Generator</a>
+                        </nav>
+                        
+                        <button onClick={onMenuToggle} className="menu-button">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </header>
+            );
+        }
+        
+        // Hero Component
+        function Hero() {
+            return (
+                <div className="hero gradient-hero">
+                    <div className="container">
+                        <h1 className="hero-title animate-fadeInUp">
+                            UDA Simulatore per generare prompt per UDA
+                        </h1>
+                        <p className="hero-subtitle animate-fadeIn">
+                            Crea UDA personalizzate con l'intelligenza artificiale - Veloce, professionale, efficace
+                        </p>
+                        <div className="hero-image-container animate-fadeIn">
+                            <div className="hero-image gradient-primary">
+                                <div style={{textAlign: 'center'}}>
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    <p className="hero-image-text">Creatività + Automazione</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Template Card Component
+        function TemplateCard({ template, onSelect }) {
+            return (
+                <div className="card card-hover" onClick={() => onSelect(template)} style={{cursor: 'pointer'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem'}}>
+                        <div style={{fontSize: '2rem'}}>{template.icon}</div>
+                        <span className={`badge ${template.badgeColor}`}>{template.badge}</span>
+                    </div>
+                    <h3 style={{fontSize: '1.125rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.5rem'}}>
+                        {template.title}
+                    </h3>
+                    <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
+                        {template.description}
+                    </p>
+                    <ul style={{fontSize: '0.875rem', marginBottom: '1rem', listStyle: 'none'}}>
+                        <li>• Disciplina: {template.disciplina}</li>
+                        <li>• Classe: {template.classe}</li>
+                        <li>• Durata: {template.durata} ore</li>
+                    </ul>
+                    <button className="btn btn-accent gradient-accent" style={{width: '100%'}}>
+                        Usa questo template
+                    </button>
+                </div>
+            );
+        }
+        
+        // Main App Component
+        function App() {
+            const [formData, setFormData] = useState({
+                disciplina: '',
+                classe: '',
+                durata: 10,
+                titolo: '',
+                competenze: [],
+                obiettivi: '',
+                prerequisiti: [],
+                metodologie: [],
+                strumenti: [],
+                valutazione: '',
+                contestoClasse: '',
+                bes: [],
+                strategiePersonalizzazione: '',
+                interdisciplinarita: []
+            });
+            
+            const [showOutput, setShowOutput] = useState(false);
+            const [generatedPrompt, setGeneratedPrompt] = useState('');
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [toast, setToast] = useState(null);
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [prerequisitoInput, setPrerequisitoInput] = useState('');
+            const [interdisciplinaritaInput, setInterdisciplinaritaInput] = useState('');
+            
+            const templates = [
+                {
+                    icon: '⚛️',
+                    badge: 'Principianti',
+                    badgeColor: 'green',
+                    title: 'UDA STEM - Scuola Primaria',
+                    description: 'Approccio hands-on alle scienze',
+                    disciplina: 'Scienze + Matematica',
+                    classe: '3ª-5ª primaria',
+                    durata: 8,
+                    data: {
+                        disciplina: 'Scienze',
+                        classe: '4ª Primaria',
+                        durata: 8,
+                        titolo: 'Il metodo scientifico: piccoli scienziati crescono',
+                        competenze: ['Competenza matematica e competenza in scienze, tecnologie e ingegneria', 'Competenza personale, sociale e capacità di imparare ad imparare'],
+                        metodologie: ['Learning by Doing', 'Cooperative Learning'],
+                        valutazione: 'Valutazione autentica (compito di realtà)'
+                    }
+                },
+                {
+                    icon: '🔗',
+                    badge: 'Intermedio',
+                    badgeColor: 'blue',
+                    title: 'Progetto Interdisciplinare',
+                    description: 'Connessioni tra discipline',
+                    disciplina: 'Italiano + Storia + Arte',
+                    classe: '2ª-3ª secondaria I grado',
+                    durata: 15,
+                    data: {
+                        disciplina: 'Italiano',
+                        classe: '3ª Secondaria I grado',
+                        durata: 15,
+                        titolo: 'Il Rinascimento: arte, letteratura e società',
+                        competenze: ['Competenza alfabetica funzionale', 'Competenza in materia di consapevolezza ed espressione culturali'],
+                        metodologie: ['Problem-Based Learning (PBL)', 'Digital Storytelling'],
+                        interdisciplinarita: ['Storia', 'Arte']
+                    }
+                },
+                {
+                    icon: '💬',
+                    badge: 'Avanzato',
+                    badgeColor: 'purple',
+                    title: 'Debate e Public Speaking',
+                    description: 'Competenze argomentative',
+                    disciplina: 'Italiano + Ed. Civica',
+                    classe: '3ª-5ª secondaria II grado',
+                    durata: 20,
+                    data: {
+                        disciplina: 'Italiano',
+                        classe: '4ª Secondaria II grado',
+                        durata: 20,
+                        titolo: 'L\'arte del dibattito: argomentare con metodo',
+                        competenze: ['Competenza alfabetica funzionale', 'Competenza in materia di cittadinanza'],
+                        metodologie: ['Debate', 'Role Playing'],
+                        interdisciplinarita: ['Educazione Civica']
+                    }
+                },
+                {
+                    icon: '🛡️',
+                    badge: 'Attuale',
+                    badgeColor: 'orange',
+                    title: 'Educazione Civica Digitale',
+                    description: 'Cittadinanza digitale',
+                    disciplina: 'Ed. Civica + Tecnologia',
+                    classe: 'tutte le classi',
+                    durata: 10,
+                    data: {
+                        disciplina: 'Educazione Civica',
+                        classe: '2ª Secondaria II grado',
+                        durata: 10,
+                        titolo: 'Cittadini digitali consapevoli',
+                        competenze: ['Competenza digitale', 'Competenza in materia di cittadinanza'],
+                        metodologie: ['Flipped Classroom', 'Gamification'],
+                        interdisciplinarita: ['Tecnologia']
+                    }
+                }
+            ];
+            
+            // Calculate progress
+            const calculateProgress = () => {
+                const fields = [
+                    formData.disciplina,
+                    formData.classe,
+                    formData.titolo,
+                    formData.competenze.length > 0,
+                    formData.obiettivi,
+                    formData.metodologie.length > 0,
+                    formData.strumenti.length > 0,
+                    formData.valutazione
+                ];
+                
+                const completed = fields.filter(Boolean).length;
+                return {
+                    progress: (completed / fields.length) * 100,
+                    completed,
+                    total: fields.length
+                };
+            };
+            
+            const { progress, completed, total } = calculateProgress();
+            
+            // Auto-save
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    localStorage.setItem('uda_draft', JSON.stringify({
+                        timestamp: Date.now(),
+                        formData,
+                        version: '2.0'
+                    }));
+                }, 500);
+                
+                return () => clearTimeout(timer);
+            }, [formData]);
+            
+            // Load draft
+            useEffect(() => {
+                const draft = localStorage.getItem('uda_draft');
+                if (draft) {
+                    try {
+                        const parsed = JSON.parse(draft);
+                        if (parsed.formData && Object.keys(parsed.formData).some(key => parsed.formData[key])) {
+                            if (window.confirm('È stata trovata una bozza salvata. Vuoi ripristinarla?')) {
+                                setFormData(parsed.formData);
+                                showToast('Bozza ripristinata', 'success');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Errore caricamento bozza', e);
+                    }
+                }
+            }, []);
+            
+            const showToast = (message, type = 'success') => {
+                setToast({ message, type });
+            };
+            
+            const handleTemplateSelect = (template) => {
+                setFormData(prev => ({...prev, ...template.data}));
+                showToast('Template caricato con successo', 'success');
+                setTimeout(() => window.scrollTo({ top: 600, behavior: 'smooth' }), 100);
+            };
+            
+            const addTag = (field, value) => {
+                if (value.trim() && !formData[field].includes(value.trim())) {
+                    setFormData(prev => ({
+                        ...prev,
+                        [field]: [...prev[field], value.trim()]
+                    }));
+                }
+            };
+            
+            const removeTag = (field, index) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: prev[field].filter((_, i) => i !== index)
+                }));
+            };
+            
+            const toggleArrayItem = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: prev[field].includes(value)
+                        ? prev[field].filter(item => item !== value)
+                        : [...prev[field], value]
+                }));
+            };
+            
+            const generatePrompt = () => {
+                setIsGenerating(true);
+                
+                setTimeout(() => {
+                    const prompt = `# PROMPT PER GENERAZIONE UDA
+
+## INFORMAZIONI GENERALI
+- **Disciplina**: ${formData.disciplina || 'Non specificata'}
+- **Classe/Livello**: ${formData.classe || 'Non specificata'}
+- **Durata**: ${formData.durata} ore
+- **Titolo UDA**: "${formData.titolo || 'Non specificato'}"
+
+## COMPETENZE E OBIETTIVI
+
+### Competenze chiave europee da sviluppare:
+${formData.competenze.length > 0 ? formData.competenze.map(c => `- ${c}`).join('\n') : '- Non specificate'}
+
+### Obiettivi di apprendimento:
+${formData.obiettivi ? formData.obiettivi.split('\n').filter(o => o.trim()).map(o => `- ${o}`).join('\n') : '- Non specificati'}
+
+${formData.prerequisiti.length > 0 ? `
+### Prerequisiti necessari:
+${formData.prerequisiti.map(p => `- ${p}`).join('\n')}
+` : ''}
+
+## METODOLOGIE E STRUMENTI
+
+### Metodologie didattiche da utilizzare:
+${formData.metodologie.length > 0 ? formData.metodologie.map(m => `- ${m}`).join('\n') : '- Non specificate'}
+
+### Strumenti digitali consigliati:
+${formData.strumenti.length > 0 ? formData.strumenti.map(s => `- ${s}`).join('\n') : '- Non specificati'}
+
+### Modalità di valutazione:
+${formData.valutazione || 'Non specificata'}
+
+${formData.contestoClasse ? `
+## CONTESTO CLASSE
+${formData.contestoClasse}
+` : ''}
+
+${formData.bes.length > 0 ? `
+## PERSONALIZZAZIONE E INCLUSIONE
+Strategie per studenti con:
+${formData.bes.map(b => `- ${b}`).join('\n')}
+
+${formData.strategiePersonalizzazione || ''}
+` : ''}
+
+${formData.interdisciplinarita.length > 0 ? `
+## COLLEGAMENTI INTERDISCIPLINARI
+Collegamenti con: ${formData.interdisciplinarita.join(', ')}
+` : ''}
+
+---
+
+## RICHIESTA SPECIFICA
+
+Crea un'Unità di Apprendimento completa e dettagliata seguendo questa struttura:
+
+### 1. FASE DI AGGANCIO/MOTIVAZIONE (${Math.round(formData.durata * 0.15)} ore)
+Progetta un'attività iniziale coinvolgente che:
+- Catturi l'attenzione e stimoli la curiosità
+- Colleghi il tema alle esperienze degli studenti
+- Presenti una situazione-problema significativa
+
+### 2. ATTIVITÀ DI ESPLORAZIONE (${Math.round(formData.durata * 0.45)} ore)
+Sviluppa attività di apprendimento attivo che:
+- Utilizzino le metodologie indicate
+- Integrino gli strumenti digitali selezionati
+- Favoriscano la collaborazione e il confronto
+- Sviluppino le competenze target
+
+### 3. CONSOLIDAMENTO DELLE CONOSCENZE (${Math.round(formData.durata * 0.25)} ore)
+Progetta momenti di:
+- Sistematizzazione delle conoscenze
+- Applicazione in nuovi contesti
+- Riflessione metacognitiva sul processo
+
+### 4. VERIFICA E VALUTAZIONE (${Math.round(formData.durata * 0.15)} ore)
+Elabora strumenti di ${formData.valutazione || 'valutazione'} che:
+- Siano coerenti con gli obiettivi dichiarati
+- Valutino competenze e non solo conoscenze
+- Includano criteri di valutazione chiari e rubriche
+
+${formData.bes.length > 0 ? `
+### 5. STRATEGIE DI PERSONALIZZAZIONE
+Per ogni fase, specifica adattamenti e supporti per gli studenti con ${formData.bes.join(', ')}
+` : ''}
+
+---
+
+## OUTPUT RICHIESTO
+
+Fornisci:
+1. Descrizione dettagliata di ogni fase con tempistiche
+2. Consegne precise per gli studenti
+3. Rubriche di valutazione
+4. Materiali e risorse necessarie
+5. Suggerimenti per la gestione della classe
+${formData.interdisciplinarita.length > 0 ? `6. Indicazioni per il lavoro interdisciplinare con ${formData.interdisciplinarita.join(', ')}` : ''}
+
+Utilizza un linguaggio chiaro, professionale e direttamente applicabile in classe.`;
+                    
+                    setGeneratedPrompt(prompt);
+                    setIsGenerating(false);
+                    setShowOutput(true);
+                    showToast('Prompt generato con successo!', 'success');
+                    
+                    setTimeout(() => {
+                        document.getElementById('output-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }, 1500);
+            };
+            
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(generatedPrompt).then(() => {
+                    showToast('Copiato negli appunti!', 'success');
+                });
+            };
+            
+            const downloadTxt = () => {
+                const blob = new Blob([generatedPrompt], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `uda-${formData.titolo.replace(/\s+/g, '-').toLowerCase() || 'prompt'}.txt`;
+                a.click();
+                showToast('Download avviato', 'success');
+            };
+            
+            const canGenerate = formData.disciplina && formData.classe && formData.titolo && 
+                               formData.competenze.length > 0 && formData.obiettivi && 
+                               formData.metodologie.length > 0 && formData.valutazione;
+            
+            const getProgressBarColor = () => {
+                if (progress < 34) return 'red';
+                if (progress < 67) return 'yellow';
+                return 'green';
+            };
+            
+            return (
+                <div>
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                    
+                    <Header onMenuToggle={() => setMenuOpen(!menuOpen)} />
+                    
+                    {/* Mobile Menu */}
+                    <div className={`menu-overlay ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)}></div>
+                    <div className={`menu-mobile ${menuOpen ? 'open' : ''}`}>
+                        <button onClick={() => setMenuOpen(false)} style={{position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer'}}>
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <nav style={{marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                            <a href="#" style={{display: 'block', padding: '0.5rem 0', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500}}>🏠 Home page</a>
+                            <a href="#" style={{display: 'block', padding: '0.5rem 0', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500}}>🔬 UDA Lab</a>
+                            <a href="#" style={{display: 'block', padding: '0.5rem 0', color: 'var(--primary)', textDecoration: 'none', fontWeight: 700}}>⚡ UDA Smart Generator</a>
+                        </nav>
+                    </div>
+                    
+                    <Hero />
+                    
+                    {/* Templates */}
+                    <div className="container py-12">
+                        <h2 className="text-center mb-8" style={{fontSize: '2rem', fontWeight: 700, color: 'var(--primary)'}}>
+                            ⚡ Inizia velocemente da un template
+                        </h2>
+                        <div className="grid grid-1 grid-4 mb-12">
+                            {templates.map((template, index) => (
+                                <TemplateCard key={index} template={template} onSelect={handleTemplateSelect} />
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Form */}
+                    <div style={{maxWidth: '56rem', margin: '0 auto', padding: '0 1rem 5rem'}}>
+                        {/* Progress Bar */}
+                        <div className="progress-card">
+                            <div className="progress-header">
+                                <span style={{fontWeight: 600, color: 'var(--text-primary)'}}>Progresso compilazione:</span>
+                                <span style={{fontWeight: 700, color: 'var(--primary)'}}>{Math.round(progress)}%</span>
+                            </div>
+                            <div className="progress-bar-container">
+                                <div className={`progress-bar ${getProgressBarColor()}`} style={{width: `${progress}%`}}></div>
+                            </div>
+                            <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)'}}>{completed}/{total} campi completati</p>
+                        </div>
+                        
+                        {/* Card 1: Informazioni Base */}
+                        <div className="card mb-6">
+                            <div className="card-header">
+                                <div className="card-icon blue">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="card-title">Informazioni di Base</div>
+                                    <div className="card-subtitle">Dati essenziali della UDA</div>
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Disciplina *</label>
+                                <select 
+                                    value={formData.disciplina}
+                                    onChange={e => setFormData({...formData, disciplina: e.target.value})}
+                                    className="form-select"
+                                >
+                                    <option value="">Seleziona disciplina...</option>
+                                    <option value="Italiano">📚 Italiano</option>
+                                    <option value="Matematica">🔢 Matematica</option>
+                                    <option value="Storia">📜 Storia</option>
+                                    <option value="Scienze">🔬 Scienze</option>
+                                    <option value="Geografia">🌍 Geografia</option>
+                                    <option value="Inglese">🇬🇧 Inglese</option>
+                                    <option value="Arte e Immagine">🎨 Arte e Immagine</option>
+                                    <option value="Tecnologia">💻 Tecnologia</option>
+                                    <option value="Educazione Civica">⚖️ Educazione Civica</option>
+                                    <option value="Musica">🎵 Musica</option>
+                                    <option value="Educazione Fisica">⚽ Educazione Fisica</option>
+                                </select>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Classe/Livello scolastico *</label>
+                                <select 
+                                    value={formData.classe}
+                                    onChange={e => setFormData({...formData, classe: e.target.value})}
+                                    className="form-select"
+                                >
+                                    <option value="">Seleziona classe...</option>
+                                    <option value="Infanzia (3-5 anni)">Infanzia (3-5 anni)</option>
+                                    <option value="1ª Primaria">1ª Primaria</option>
+                                    <option value="2ª Primaria">2ª Primaria</option>
+                                    <option value="3ª Primaria">3ª Primaria</option>
+                                    <option value="4ª Primaria">4ª Primaria</option>
+                                    <option value="5ª Primaria">5ª Primaria</option>
+                                    <option value="1ª Secondaria I grado">1ª Secondaria I grado</option>
+                                    <option value="2ª Secondaria I grado">2ª Secondaria I grado</option>
+                                    <option value="3ª Secondaria I grado">3ª Secondaria I grado</option>
+                                    <option value="1ª Secondaria II grado">1ª Secondaria II grado</option>
+                                    <option value="2ª Secondaria II grado">2ª Secondaria II grado</option>
+                                    <option value="3ª Secondaria II grado">3ª Secondaria II grado</option>
+                                    <option value="4ª Secondaria II grado">4ª Secondaria II grado</option>
+                                    <option value="5ª Secondaria II grado">5ª Secondaria II grado</option>
+                                </select>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Durata UDA (ore)</label>
+                                <div className="range-container">
+                                    <input 
+                                        type="range"
+                                        min="2"
+                                        max="50"
+                                        value={formData.durata}
+                                        onChange={e => setFormData({...formData, durata: parseInt(e.target.value)})}
+                                        className="range-slider"
+                                    />
+                                    <span className="range-value">{formData.durata} ore</span>
+                                </div>
+                                {formData.durata < 5 && <p className="form-warning">⚠️ Una UDA così breve potrebbe non sviluppare adeguatamente le competenze</p>}
+                                {formData.durata > 30 && <p className="form-warning">⚠️ Considera di suddividere in UDA più brevi</p>}
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Titolo UDA *</label>
+                                <input 
+                                    type="text"
+                                    value={formData.titolo}
+                                    onChange={e => setFormData({...formData, titolo: e.target.value})}
+                                    placeholder="es: Viaggio nell'antica Roma"
+                                    maxLength={100}
+                                    className="form-input"
+                                />
+                                <p className="form-hint text-right">{formData.titolo.length}/100 caratteri</p>
+                                {formData.titolo.length > 0 && formData.titolo.length < 10 && (
+                                    <p className="form-error">Il titolo deve essere di almeno 10 caratteri</p>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {/* Card 2: Competenze */}
+                        <div className="card mb-6">
+                            <div className="card-header">
+                                <div className="card-icon green">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="card-title">Competenze e Obiettivi</div>
+                                    <div className="card-subtitle">Definisci le competenze target</div>
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Competenze chiave europee *</label>
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                                    {[
+                                        'Competenza alfabetica funzionale',
+                                        'Competenza multilinguistica',
+                                        'Competenza matematica e competenza in scienze, tecnologie e ingegneria',
+                                        'Competenza digitale',
+                                        'Competenza personale, sociale e capacità di imparare ad imparare',
+                                        'Competenza in materia di cittadinanza',
+                                        'Competenza imprenditoriale',
+                                        'Competenza in materia di consapevolezza ed espressione culturali'
+                                    ].map(comp => (
+                                        <label key={comp} className="checkbox-container">
+                                            <input 
+                                                type="checkbox"
+                                                checked={formData.competenze.includes(comp)}
+                                                onChange={() => toggleArrayItem('competenze', comp)}
+                                                className="checkbox-custom"
+                                            />
+                                            <span style={{fontSize: '0.875rem', color: 'var(--text-primary)'}}>{comp}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                {formData.competenze.length > 3 && (
+                                    <p className="form-warning mt-2">⚠️ Selezionare troppe competenze potrebbe disperdere il focus</p>
+                                )}
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Obiettivi di apprendimento *</label>
+                                <textarea 
+                                    value={formData.obiettivi}
+                                    onChange={e => setFormData({...formData, obiettivi: e.target.value})}
+                                    placeholder="Inserisci gli obiettivi di apprendimento (uno per riga)&#10;Suggerimento: Inizia con verbi d'azione come 'Conoscere', 'Comprendere', 'Applicare', 'Analizzare', 'Creare'"
+                                    rows={6}
+                                    className="form-textarea"
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Prerequisiti</label>
+                                <div className="tags-container">
+                                    {formData.prerequisiti.map((pre, index) => (
+                                        <span key={index} className="tag blue">
+                                            {pre}
+                                            <button onClick={() => removeTag('prerequisiti', index)} className="tag-remove">×</button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="tag-input-container">
+                                    <input 
+                                        type="text"
+                                        value={prerequisitoInput}
+                                        onChange={e => setPrerequisitoInput(e.target.value)}
+                                        onKeyPress={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                addTag('prerequisiti', prerequisitoInput);
+                                                setPrerequisitoInput('');
+                                            }
+                                        }}
+                                        placeholder="Aggiungi prerequisito e premi Invio..."
+                                        className="form-input"
+                                        style={{flex: 1}}
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            addTag('prerequisiti', prerequisitoInput);
+                                            setPrerequisitoInput('');
+                                        }}
+                                        className="btn btn-accent gradient-accent"
+                                    >
+                                        Aggiungi
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Card 3: Metodologie */}
+                        <div className="card mb-6">
+                            <div className="card-header">
+                                <div className="card-icon purple">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="card-title">Metodologie e Strumenti</div>
+                                    <div className="card-subtitle">Strumenti didattici e digitali</div>
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Metodologie didattiche *</label>
+                                <div className="grid grid-1 grid-2">
+                                    {[
+                                        { name: 'Cooperative Learning', icon: '🤝' },
+                                        { name: 'Flipped Classroom', icon: '🔄' },
+                                        { name: 'Problem-Based Learning (PBL)', icon: '🎯' },
+                                        { name: 'Role Playing', icon: '🎭' },
+                                        { name: 'Learning by Doing', icon: '🔬' },
+                                        { name: 'Debate', icon: '💭' },
+                                        { name: 'Digital Storytelling', icon: '📱' },
+                                        { name: 'Gamification', icon: '🎮' }
+                                    ].map(metodo => (
+                                        <label key={metodo.name} className="checkbox-container" style={{border: '2px solid var(--border)', borderRadius: '0.5rem'}}>
+                                            <input 
+                                                type="checkbox"
+                                                checked={formData.metodologie.includes(metodo.name)}
+                                                onChange={() => toggleArrayItem('metodologie', metodo.name)}
+                                                className="checkbox-custom"
+                                            />
+                                            <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>{metodo.icon}</span>
+                                            <span style={{fontSize: '0.875rem', fontWeight: 500}}>{metodo.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Strumenti digitali</label>
+                                <div className="grid grid-2 grid-3">
+                                    {['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'].map(tool => (
+                                        <label key={tool} className="checkbox-container" style={{padding: '0.5rem', border: '1px solid var(--border)', borderRadius: '0.5rem'}}>
+                                            <input 
+                                                type="checkbox"
+                                                checked={formData.strumenti.includes(tool)}
+                                                onChange={() => toggleArrayItem('strumenti', tool)}
+                                                className="checkbox-custom"
+                                            />
+                                            <span style={{fontSize: '0.875rem'}}>{tool}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Modalità di valutazione *</label>
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                                    {[
+                                        'Valutazione formativa (in itinere)',
+                                        'Valutazione sommativa (finale)',
+                                        'Valutazione autentica (compito di realtà)',
+                                        'Peer assessment (valutazione tra pari)',
+                                        'Auto-valutazione',
+                                        'Valutazione mista'
+                                    ].map(val => (
+                                        <label key={val} className="radio-container">
+                                            <input 
+                                                type="radio"
+                                                name="valutazione"
+                                                checked={formData.valutazione === val}
+                                                onChange={() => setFormData({...formData, valutazione: val})}
+                                                className="radio-custom"
+                                            />
+                                            <span style={{fontSize: '0.875rem'}}>{val}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Card 4: Personalizzazione */}
+                        <div className="card mb-8">
+                            <div className="card-header">
+                                <div className="card-icon orange">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div className="card-title">Contesto e Personalizzazione</div>
+                                    <div className="card-subtitle">Adatta l'UDA al tuo contesto</div>
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Contesto classe (opzionale)</label>
+                                <textarea 
+                                    value={formData.contestoClasse}
+                                    onChange={e => setFormData({...formData, contestoClasse: e.target.value})}
+                                    placeholder="Descrivi il contesto della tua classe: composizione, livello, dinamiche, interessi particolari...&#10;es: Classe di 24 alunni, vivace e curiosa, con forte interesse per le tecnologie digitali"
+                                    rows={4}
+                                    maxLength={500}
+                                    className="form-textarea"
+                                />
+                                <p className="form-hint text-right">{formData.contestoClasse.length}/500 caratteri</p>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Bisogni Educativi Speciali</label>
+                                <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                                    {[
+                                        'BES - Bisogni Educativi Speciali',
+                                        'DSA - Disturbi Specifici dell\'Apprendimento',
+                                        'Disabilità',
+                                        'Alunni non italofoni',
+                                        'Plusdotazione'
+                                    ].map(bes => (
+                                        <label key={bes} className="checkbox-container" style={{justifyContent: 'space-between'}}>
+                                            <span style={{fontSize: '0.875rem'}}>{bes}</span>
+                                            <input 
+                                                type="checkbox"
+                                                checked={formData.bes.includes(bes)}
+                                                onChange={() => toggleArrayItem('bes', bes)}
+                                                className="checkbox-custom"
+                                            />
+                                        </label>
+                                    ))}
+                                </div>
+                                
+                                {formData.bes.length > 0 && (
+                                    <div className="mt-4">
+                                        <label className="form-label">Specifica le strategie di personalizzazione</label>
+                                        <textarea 
+                                            value={formData.strategiePersonalizzazione}
+                                            onChange={e => setFormData({...formData, strategiePersonalizzazione: e.target.value})}
+                                            placeholder="Descrivi le strategie specifiche di personalizzazione..."
+                                            rows={3}
+                                            className="form-textarea"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="form-group">
+                                <label className="form-label">Collegamenti interdisciplinari</label>
+                                <div className="tags-container">
+                                    {formData.interdisciplinarita.map((disc, index) => (
+                                        <span key={index} className="tag purple">
+                                            {disc}
+                                            <button onClick={() => removeTag('interdisciplinarita', index)} className="tag-remove">×</button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="tag-input-container">
+                                    <input 
+                                        type="text"
+                                        value={interdisciplinaritaInput}
+                                        onChange={e => setInterdisciplinaritaInput(e.target.value)}
+                                        onKeyPress={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                addTag('interdisciplinarita', interdisciplinaritaInput);
+                                                setInterdisciplinaritaInput('');
+                                            }
+                                        }}
+                                        placeholder="Aggiungi disciplina collegata e premi Invio..."
+                                        className="form-input"
+                                        style={{flex: 1}}
+                                    />
+                                    <button 
+                                        onClick={() => {
+                                            addTag('interdisciplinarita', interdisciplinaritaInput);
+                                            setInterdisciplinaritaInput('');
+                                        }}
+                                        className="btn btn-accent gradient-accent"
+                                    >
+                                        Aggiungi
+                                    </button>
+                                </div>
+                                {formData.interdisciplinarita.length > 3 && (
+                                    <p className="form-warning mt-2">⚠️ Troppi collegamenti interdisciplinari potrebbero disperdere il focus</p>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {/* Generate Button */}
+                        <div className="text-center mb-12">
+                            <button 
+                                onClick={generatePrompt}
+                                disabled={!canGenerate || isGenerating}
+                                className={`btn btn-lg ${canGenerate && !isGenerating ? 'btn-accent gradient-accent animate-pulse-slow' : ''}`}
+                                style={{boxShadow: canGenerate && !isGenerating ? 'var(--shadow-xl)' : 'none'}}
+                            >
+                                {isGenerating ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        <span>Generazione in corso...</span>
+                                    </>
+                                ) : canGenerate ? (
+                                    '✨ Genera il mio Prompt UDA'
+                                ) : (
+                                    'Completa tutti i campi obbligatori'
+                                )}
+                            </button>
+                        </div>
+                        
+                        {/* Output Section */}
+                        {showOutput && (
+                            <div id="output-section" className="output-section animate-fadeIn">
+                                <h2 style={{fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                    <span>✨</span>
+                                    Il tuo prompt personalizzato
+                                </h2>
+                                
+                                <div className="output-content">
+                                    <pre>{generatedPrompt}</pre>
+                                </div>
+                                
+                                <div className="stats-grid">
+                                    <div className="stat-card blue">
+                                        <div className="stat-label">📊 Lunghezza</div>
+                                        <div className="stat-value">{generatedPrompt.length} caratteri</div>
+                                    </div>
+                                    <div className="stat-card green">
+                                        <div className="stat-label">🔤 Token stimati</div>
+                                        <div className="stat-value">~{Math.round(generatedPrompt.length / 4)}</div>
+                                    </div>
+                                    <div className="stat-card purple">
+                                        <div className="stat-label">⏱️ Tempo lettura</div>
+                                        <div className="stat-value">{Math.round(generatedPrompt.split(' ').length / 200)} min</div>
+                                    </div>
+                                    <div className="stat-card amber">
+                                        <div className="stat-label">📈 Completezza</div>
+                                        <div className="stat-value">95%</div>
+                                    </div>
+                                </div>
+                                
+                                <div style={{display: 'flex', flexWrap: 'wrap', gap: '0.75rem'}}>
+                                    <button onClick={copyToClipboard} className="btn btn-primary" style={{flex: '1 1 200px'}}>
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        Copia negli appunti
+                                    </button>
+                                    
+                                    <button onClick={downloadTxt} className="btn btn-accent gradient-accent" style={{flex: '1 1 200px'}}>
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Scarica .txt
+                                    </button>
+                                    
+                                    <button 
+                                        onClick={() => {
+                                            setShowOutput(false);
+                                            window.scrollTo({ top: 600, behavior: 'smooth' });
+                                        }}
+                                        className="btn btn-outline"
+                                        style={{flex: '1 1 200px'}}
+                                    >
+                                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Modifica
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Footer */}
+                    <footer className="footer">
+                        <div className="footer-content">
+                            <div className="footer-grid">
+                                <div className="footer-section">
+                                    <h4>UDA Smart Generator</h4>
+                                    <p>Strumento per la progettazione didattica basato su AI</p>
+                                </div>
+                                
+                                <div className="footer-section">
+                                    <h4>Link Utili</h4>
+                                    <ul className="footer-links">
+                                        <li><a href="#">Home</a></li>
+                                        <li><a href="#">UDA Lab</a></li>
+                                        <li><a href="#">Scenari creativi</a></li>
+                                        <li><a href="#">Media literacy</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div className="footer-section">
+                                    <h4>Informazioni</h4>
+                                    <ul className="footer-links">
+                                        <li><a href="#">Privacy Policy</a></li>
+                                        <li><a href="#">Termini d'uso</a></li>
+                                        <li><a href="#">Report abuse</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="footer-bottom">
+                                <p>
+                                    Materiale didattico prodotto da<br/>
+                                    <strong>Prof.ssa Silvia Selvaggi</strong>
+                                </p>
+                                
+                                <div className="cc-license">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88 31'%3E%3Cpath d='M1.8 0h84.4c1 0 1.8.8 1.8 1.8v27.4c0 1-.8 1.8-1.8 1.8H1.8C.8 31 0 30.2 0 29.2V1.8C0 .8.8 0 1.8 0z' fill='%23aab2ab'/%3E%3Cpath d='M7 8.5h11v4.5H7V8.5zm0 5.5h11v4H7v-4z' fill='%23fff'/%3E%3Ctext x='23' y='11' font-family='Arial' font-size='7' fill='%23fff'%3ECC%3C/text%3E%3Ctext x='23' y='18' font-family='Arial' font-size='7' fill='%23fff'%3EBY-ND%3C/text%3E%3C/svg%3E" alt="CC BY-ND 4.0" />
+                                </div>
+                                
+                                <p style={{fontSize: '0.75rem', maxWidth: '600px', margin: '0 auto'}}>
+                                    Quest'opera è rilasciata con licenza<br/>
+                                    Creative Commons Attribuzione - Non opere derivate 4.0 Internazionale
+                                </p>
+                                
+                                <a href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener noreferrer">
+                                    http://creativecommons.org/licenses/by-nd/4.0/
+                                </a>
+                                
+                                <p style={{marginTop: '1.5rem', color: '#6b7280'}}>
+                                    © 2024 UDA Smart Generator | Made with ❤️ for educators
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+        
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
