@@ -1160,7 +1160,7 @@
                 prerequisiti: [],
                 metodologie: [],
                 strumenti: [],
-                valutazione: '',
+                valutazione: [],
                 contestoClasse: '',
                 bes: [],
                 strategiePersonalizzazione: '',
@@ -1174,6 +1174,8 @@
             const [menuOpen, setMenuOpen] = useState(false);
             const [prerequisitoInput, setPrerequisitoInput] = useState('');
             const [interdisciplinaritaInput, setInterdisciplinaritaInput] = useState('');
+            const [metodologieAltro, setMetodologieAltro] = useState('');
+            const [strumentiAltro, setStrumentiAltro] = useState('');
             const [activeModal, setActiveModal] = useState(null);
             
             const templates = [
@@ -1378,7 +1380,7 @@ ${formData.metodologie.length > 0 ? formData.metodologie.map(m => `- ${m}`).join
 ${formData.strumenti.length > 0 ? formData.strumenti.map(s => `- ${s}`).join('\n') : '- Non specificati'}
 
 ### Modalità di valutazione:
-${formData.valutazione || 'Non specificata'}
+${formData.valutazione.length > 0 ? formData.valutazione.join(', ') : 'Non specificata'}
 
 ${formData.contestoClasse ? `
 ## CONTESTO CLASSE
@@ -1487,7 +1489,7 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                         prerequisiti: [],
                         metodologie: [],
                         strumenti: [],
-                        valutazione: '',
+                        valutazione: [],
                         contestoClasse: '',
                         bes: [],
                         strategiePersonalizzazione: '',
@@ -1605,12 +1607,14 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                             
                             <div className="form-group">
                                 <label className="form-label">Disciplina *</label>
-                                <select 
+                                <input 
+                                    list="discipline-list"
                                     value={formData.disciplina}
                                     onChange={e => setFormData({...formData, disciplina: e.target.value})}
-                                    className="form-select"
-                                >
-                                    <option value="">Seleziona disciplina...</option>
+                                    className="form-input"
+                                    placeholder="Seleziona disciplina oppure scrivila direttamente"
+                                />
+                                <datalist id="discipline-list">
                                     <option value="Italiano">📚 Italiano</option>
                                     <option value="Matematica">🔢 Matematica</option>
                                     <option value="Storia">📜 Storia</option>
@@ -1622,7 +1626,7 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                     <option value="Educazione Civica">⚖️ Educazione Civica</option>
                                     <option value="Musica">🎵 Musica</option>
                                     <option value="Educazione Fisica">⚽ Educazione Fisica</option>
-                                </select>
+                                </datalist>
                             </div>
                             
                             <div className="form-group">
@@ -1816,6 +1820,40 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                         </label>
                                     ))}
                                 </div>
+                                
+                                {/* Campo Altro per metodologie */}
+                                <div style={{marginTop: '1rem'}}>
+                                    <label className="checkbox-container" style={{border: '2px solid var(--accent)', borderRadius: '0.5rem', background: '#fef3c7'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={metodologieAltro !== ''}
+                                            onChange={(e) => {
+                                                if (!e.target.checked) {
+                                                    setMetodologieAltro('');
+                                                }
+                                            }}
+                                            className="checkbox-custom"
+                                        />
+                                        <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>✏️</span>
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#92400e'}}>Altro (specifica)</span>
+                                    </label>
+                                    {metodologieAltro !== '' || formData.metodologie.some(m => !['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'].includes(m)) ? (
+                                        <input 
+                                            type="text"
+                                            value={metodologieAltro}
+                                            onChange={(e) => setMetodologieAltro(e.target.value)}
+                                            onBlur={() => {
+                                                if (metodologieAltro.trim()) {
+                                                    const newMetodologie = [...formData.metodologie.filter(m => ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'].includes(m)), metodologieAltro.trim()];
+                                                    setFormData({...formData, metodologie: newMetodologie});
+                                                }
+                                            }}
+                                            placeholder="Inserisci altra metodologia..."
+                                            className="form-input"
+                                            style={{marginTop: '0.5rem'}}
+                                        />
+                                    ) : null}
+                                </div>
                             </div>
                             
                             <div className="form-group">
@@ -1833,10 +1871,45 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                         </label>
                                     ))}
                                 </div>
+                                
+                                {/* Campo Altro per strumenti */}
+                                <div style={{marginTop: '1rem'}}>
+                                    <label className="checkbox-container" style={{padding: '0.75rem', border: '2px solid var(--accent)', borderRadius: '0.5rem', background: '#fef3c7'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={strumentiAltro !== ''}
+                                            onChange={(e) => {
+                                                if (!e.target.checked) {
+                                                    setStrumentiAltro('');
+                                                }
+                                            }}
+                                            className="checkbox-custom"
+                                        />
+                                        <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>✏️</span>
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#92400e'}}>Altro (specifica)</span>
+                                    </label>
+                                    {strumentiAltro !== '' || formData.strumenti.some(s => !['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'].includes(s)) ? (
+                                        <input 
+                                            type="text"
+                                            value={strumentiAltro}
+                                            onChange={(e) => setStrumentiAltro(e.target.value)}
+                                            onBlur={() => {
+                                                if (strumentiAltro.trim()) {
+                                                    const strumentiBase = ['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'];
+                                                    const newStrumenti = [...formData.strumenti.filter(s => strumentiBase.includes(s)), strumentiAltro.trim()];
+                                                    setFormData({...formData, strumenti: newStrumenti});
+                                                }
+                                            }}
+                                            placeholder="Inserisci altro strumento..."
+                                            className="form-input"
+                                            style={{marginTop: '0.5rem'}}
+                                        />
+                                    ) : null}
+                                </div>
                             </div>
                             
                             <div className="form-group">
-                                <label className="form-label">Modalità di valutazione *</label>
+                                <label className="form-label">Modalità di valutazione * (seleziona una o più opzioni)</label>
                                 <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
                                     {[
                                         'Valutazione formativa (in itinere)',
@@ -1846,13 +1919,12 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                         'Auto-valutazione',
                                         'Valutazione mista'
                                     ].map(val => (
-                                        <label key={val} className="radio-container">
+                                        <label key={val} className="checkbox-container">
                                             <input 
-                                                type="radio"
-                                                name="valutazione"
-                                                checked={formData.valutazione === val}
-                                                onChange={() => setFormData({...formData, valutazione: val})}
-                                                className="radio-custom"
+                                                type="checkbox"
+                                                checked={formData.valutazione.includes(val)}
+                                                onChange={() => toggleArrayItem('valutazione', val)}
+                                                className="checkbox-custom"
                                             />
                                             <span style={{fontSize: '0.875rem'}}>{val}</span>
                                         </label>
@@ -2247,9 +2319,11 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                 <div className="footer-section">
                                     <h4>Informazioni</h4>
                                     <ul className="footer-links">
-                                        <li><a href="#">Privacy Policy</a></li>
-                                        <li><a href="#">Termini d'uso</a></li>
-                                        <li><a href="#">Report abuse</a></li>
+                                        <li><span onClick={() => setActiveModal('privacy')} style={{cursor: 'pointer'}}>Privacy Policy</span></li>
+                                        <li><span onClick={() => setActiveModal('terms')} style={{cursor: 'pointer'}}>Termini d'uso</span></li>
+                                        <li><span onClick={() => setActiveModal('cookies')} style={{cursor: 'pointer'}}>Cookie Policy</span></li>
+                                        <li><span onClick={() => setActiveModal('accessibility')} style={{cursor: 'pointer'}}>Accessibilità</span></li>
+                                        <li><span onClick={() => setActiveModal('abuse')} style={{cursor: 'pointer'}}>Report abuse</span></li>
                                     </ul>
                                 </div>
                             </div>
