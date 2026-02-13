@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDA Smart - Intelligenza Artificiale per la Didattica</title>
+    <meta name="description" content="Piattaforma completa per la progettazione didattica con AI. UDA Smart Generator e UDA Lab.">
+    <meta name="author" content="Carmelo Distefano, Silvia Selvaggi">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+        
+        :root {
+            --primary: #1a365d;
+            --secondary: #2563eb;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+            padding: 0 1.5rem;
+            max-width: 1536px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .nav-desktop {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+        
+        .nav-link-active {
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 3px solid var(--accent);
+        }
+        
+        .hero {
+            padding: 10rem 1rem 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+        }
+        
+        .intro {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .intro h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .intro p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .card-icon.blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        
+        .card-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .card h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .card-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .card p {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .features {
+            background: #f0f9ff;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .features h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.75rem;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-primary);
+        }
+        
+        .features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            color: white;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+        }
+        
+        .btn-blue {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        }
+        
+        .info-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 1rem;
+        }
+        
+        .info-box p {
+            font-size: 1.125rem;
+            color: #78350f;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            background: #111827;
+            color: rgba(255,255,255,0.9);
+            padding: 3rem 1.5rem 2rem;
+        }
+        
+        .footer-content {
+            max-width: 1536px;
+            margin: 0 auto;
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .footer p {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 2rem;
+            text-align: center;
+        }
+        
+        .footer-bottom p {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-bottom strong {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-desktop {
+                display: none;
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo-icon">U</div>
+                <div>
+                    <div class="logo-text">UDA Smart</div>
+                    <div class="logo-subtitle">Smart Learning Design</div>
+                </div>
+            </div>
+            
+            <nav class="nav-desktop">
+                <a href="index.html" class="nav-link nav-link-active">🏠 Home page</a>
+                <a href="uda-lab.html" class="nav-link">🔬 UDA Lab</a>
+                <a href="generator.html" class="nav-link">⚡ UDA Generator</a>
+                <a href="lesson-plan.html" class="nav-link">📝 Lesson Plan</a>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero -->
+    <div class="hero">
+        <h1 class="hero-title">Benvenuto in UDA Smart</h1>
+        <p class="hero-subtitle">
+            Intelligenza Artificiale a Supporto della Didattica<br/>
+            Due strumenti professionali per potenziare la tua progettazione
+        </p>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container">
+        
+        <div class="intro">
+            <h2>L'IA che Potenzia, Non Sostituisce</h2>
+            <p>
+                UDA Smart è una piattaforma completa progettata per affiancare gli insegnanti nella progettazione didattica, 
+                offrendo strumenti intelligenti che valorizzano la creatività e l'esperienza del docente.
+            </p>
+        </div>
+        
+        <div class="cards">
+            
+            <!-- Card Generator -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">⚡</div>
+                    <div>
+                        <h3>UDA Smart Generator</h3>
+                        <p class="card-subtitle">Genera prompt personalizzati in pochi minuti</p>
+                    </div>
+                </div>
+                
+                <p>
+                    Un assistente intelligente che <strong>non sostituisce l'insegnante</strong>, ma lo affianca nella progettazione didattica. 
+                    Genera idee, materiali e strumenti personalizzati, risparmiando tempo prezioso e potenziando la creatività.
+                </p>
+                
+                <div class="features">
+                    <h4>Cosa puoi fare:</h4>
+                    <ul>
+                        <li>Creare prompt per UDA personalizzate</li>
+                        <li>Integrare metodologie innovative</li>
+                        <li>Personalizzare per BES e inclusione</li>
+                        <li>Usare template predefiniti</li>
+                    </ul>
+                </div>
+                
+                <a href="generator.html" class="btn btn-blue">
+                    Inizia a Creare →
+                </a>
+            </div>
+            
+            <!-- Card UDA Lab -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon green">🔬</div>
+                    <div>
+                        <h3>UDA Lab</h3>
+                        <p class="card-subtitle">Buone pratiche già collaudate</p>
+                    </div>
+                </div>
+                
+                <p>
+                    Una raccolta curata di <strong>esempi reali e buone pratiche</strong>, provenienti da Scuola Futura. 
+                    Materiali pronti all'uso, testati da altri docenti e facilmente adattabili al tuo contesto didattico.
+                </p>
+                
+                <div class="features" style="background: #ecfdf5;">
+                    <h4 style="color: #065f46;">Cosa trovi:</h4>
+                    <ul>
+                        <li>Framework teorici e infografiche</li>
+                        <li>Approcci internazionali (Backward Design, OECD)</li>
+                        <li>Strutture e architetture UDA</li>
+                        <li>Best practices validate</li>
+                    </ul>
+                            
+            <!-- Card Lesson Plan -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">📝</div>
+                    <div>
+                        <h3>Lesson Plan Generator</h3>
+                        <p class="card-subtitle">Progetta lezioni efficaci e strutturate</p>
+                    </div>
+                </div>
+                
+                <p>
+                    Genera <strong>prompt professionali</strong> per creare lesson plan dettagliati. 
+                    Trasforma le tue lezioni in esperienze intenzionali, non casuali, con struttura temporale, obiettivi SMART e metodologie attive.
+                </p>
+                
+                <div class="features" style="background: #f5f3ff;">
+                    <h4 style="color: #7c3aed;">Cosa include:</h4>
+                    <ul>
+                        <li>Struttura temporale (intro, sviluppo, conclusione)</li>
+                        <li>Obiettivi di apprendimento chiari</li>
+                        <li>Materiali e risorse didattiche</li>
+                        <li>Strategie di valutazione</li>
+                        <li>Differenziazione e inclusività</li>
+                    </ul>
+                </div>
+                
+                <a href="lesson-plan.html" class="btn" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    Crea Lesson Plan →
+                </a>
+            </div>
+        </div>
+                
+                <a href="uda-lab.html" class="btn btn-green">
+                    Esplora il Lab →
+                </a>
+            </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>💡 Tre Strumenti, Un Obiettivo</h3>
+            <p>
+                <strong>UDA Generator</strong> per progettazioni complete, <strong>UDA Lab</strong> per buone pratiche consolidate, 
+                <strong>Lesson Plan</strong> per lezioni strutturate. UDA Smart ti offre tutto ciò che serve per una didattica professionale e innovativa.
+            </p>
+        </div>
+        
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div>
+                    <h4>UDA Smart</h4>
+                    <p>Strumento per la progettazione didattica basato su AI</p>
+                </div>
+                
+                <div>
+                    <h4>Link Utili</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="uda-lab.html">UDA Lab</a></li>
+                        <li><a href="generator.html">UDA Generator</a></li>
+                        <li><a href="lesson-plan.html">Lesson Plan</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4>Informazioni</h4>
+                    <p>Per informazioni contattare gli autori</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>
+                    Pagina web prodotta da <strong>Carmelo Distefano</strong><br/>
+                    in collaborazione (e grazie alle idee) di <strong>Silvia Selvaggi</strong>
+                </p>
+                <p style="margin-top: 1.5rem; color: #6b7280;">
+                    © 2026 UDA Smart | Made with ❤️ for educators
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
