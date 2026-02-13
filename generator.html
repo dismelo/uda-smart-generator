@@ -1828,8 +1828,13 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                             type="checkbox"
                                             checked={metodologieAltro !== ''}
                                             onChange={(e) => {
-                                                if (!e.target.checked) {
+                                                if (e.target.checked) {
+                                                    setMetodologieAltro(' '); // Attiva il campo
+                                                } else {
                                                     setMetodologieAltro('');
+                                                    // Rimuovi eventuali metodologie personalizzate
+                                                    const metodologieBase = ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'];
+                                                    setFormData({...formData, metodologie: formData.metodologie.filter(m => metodologieBase.includes(m))});
                                                 }
                                             }}
                                             className="checkbox-custom"
@@ -1837,22 +1842,26 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                         <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>✏️</span>
                                         <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#92400e'}}>Altro (specifica)</span>
                                     </label>
-                                    {metodologieAltro !== '' || formData.metodologie.some(m => !['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'].includes(m)) ? (
+                                    {metodologieAltro !== '' && (
                                         <input 
                                             type="text"
-                                            value={metodologieAltro}
+                                            value={metodologieAltro.trim()}
                                             onChange={(e) => setMetodologieAltro(e.target.value)}
                                             onBlur={() => {
-                                                if (metodologieAltro.trim()) {
-                                                    const newMetodologie = [...formData.metodologie.filter(m => ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'].includes(m)), metodologieAltro.trim()];
+                                                const valore = metodologieAltro.trim();
+                                                if (valore) {
+                                                    const metodologieBase = ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning (PBL)', 'Role Playing', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'];
+                                                    const altreMetodologie = formData.metodologie.filter(m => !metodologieBase.includes(m));
+                                                    const newMetodologie = [...formData.metodologie.filter(m => metodologieBase.includes(m)), valore];
                                                     setFormData({...formData, metodologie: newMetodologie});
                                                 }
                                             }}
                                             placeholder="Inserisci altra metodologia..."
                                             className="form-input"
                                             style={{marginTop: '0.5rem'}}
+                                            autoFocus
                                         />
-                                    ) : null}
+                                    )}
                                 </div>
                             </div>
                             
@@ -1879,8 +1888,13 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                             type="checkbox"
                                             checked={strumentiAltro !== ''}
                                             onChange={(e) => {
-                                                if (!e.target.checked) {
+                                                if (e.target.checked) {
+                                                    setStrumentiAltro(' '); // Attiva il campo
+                                                } else {
                                                     setStrumentiAltro('');
+                                                    // Rimuovi eventuali strumenti personalizzati
+                                                    const strumentiBase = ['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'];
+                                                    setFormData({...formData, strumenti: formData.strumenti.filter(s => strumentiBase.includes(s))});
                                                 }
                                             }}
                                             className="checkbox-custom"
@@ -1888,23 +1902,25 @@ Utilizza un linguaggio chiaro, professionale e direttamente applicabile in class
                                         <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>✏️</span>
                                         <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#92400e'}}>Altro (specifica)</span>
                                     </label>
-                                    {strumentiAltro !== '' || formData.strumenti.some(s => !['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'].includes(s)) ? (
+                                    {strumentiAltro !== '' && (
                                         <input 
                                             type="text"
-                                            value={strumentiAltro}
+                                            value={strumentiAltro.trim()}
                                             onChange={(e) => setStrumentiAltro(e.target.value)}
                                             onBlur={() => {
-                                                if (strumentiAltro.trim()) {
+                                                const valore = strumentiAltro.trim();
+                                                if (valore) {
                                                     const strumentiBase = ['Padlet', 'Canva', 'Kahoot', 'Google Slides', 'Jamboard', 'Quizizz', 'EdPuzzle', 'Scratch', 'Genially', 'Wordwall', 'Mentimeter', 'Google Forms'];
-                                                    const newStrumenti = [...formData.strumenti.filter(s => strumentiBase.includes(s)), strumentiAltro.trim()];
+                                                    const newStrumenti = [...formData.strumenti.filter(s => strumentiBase.includes(s)), valore];
                                                     setFormData({...formData, strumenti: newStrumenti});
                                                 }
                                             }}
                                             placeholder="Inserisci altro strumento..."
                                             className="form-input"
                                             style={{marginTop: '0.5rem'}}
+                                            autoFocus
                                         />
-                                    ) : null}
+                                    )}
                                 </div>
                             </div>
                             
