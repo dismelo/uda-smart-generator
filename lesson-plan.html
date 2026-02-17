@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson Plan Generator - Genera Prompt per Lesson Plan</title>
+    <title>Simulatore per generare prompt per lesson plan</title>
     <meta name="description" content="Genera prompt strutturati per creare lesson plan efficaci con qualsiasi LLM.">
     <meta name="author" content="Carmelo Distefano, Silvia Selvaggi">
     
@@ -1079,7 +1079,8 @@
                         <nav className="nav-desktop">
                             <a href="index.html" className="nav-link">🏠 Home page</a>
                             <a href="uda-lab.html" className="nav-link">🔬 UDA Lab</a>
-                            <a href="generator.html" className="nav-link nav-link-active">⚡ UDA Smart Generator</a>
+                            <a href="generator.html" className="nav-link">⚡ UDA Generator</a>
+                            <a href="lesson-plan.html" className="nav-link nav-link-active">📝 Lesson Plan</a>
                         </nav>
                         
                         <button onClick={onMenuToggle} className="menu-button">
@@ -1098,10 +1099,10 @@
                 <div className="hero gradient-hero">
                     <div className="container">
                         <h1 className="hero-title animate-fadeInUp">
-                            UDA Simulatore per generare prompt per UDA
+                            Simulatore per generare prompt per lesson plan
                         </h1>
                         <p className="hero-subtitle animate-fadeIn">
-                            Crea UDA personalizzate con l'intelligenza artificiale - Veloce, professionale, efficace
+                            Un lesson plan ben progettato trasforma la lezione in un'esperienza intenzionale, non casuale,<br/>spostando il focus sull'apprendimento effettivo
                         </p>
                         <div className="hero-image-container animate-fadeIn">
                             <div className="hero-image gradient-primary">
@@ -1423,33 +1424,37 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
             const handleReset = () => {
                 if (window.confirm('⚠️ Sei sicuro di voler resettare tutto il form? Tutti i dati inseriti verranno persi.')) {
                     setFormData({
+                        titolo: '',
                         disciplina: '',
                         classe: '',
-                        durata: 10,
-                        titolo: '',
-                        competenze: [],
+                        durataLezione: '60',
+                        argomento: '',
                         obiettivi: '',
-                        prerequisiti: [],
+                        faseIntroduzione: '',
+                        tempoIntroduzione: '10',
+                        faseSviluppo: '',
+                        tempoSviluppo: '35',
+                        faseConclusione: '',
+                        tempoConclusione: '15',
+                        materiali: '',
                         metodologie: [],
-                        strumenti: [],
-                        valutazione: [],
-                        contestoClasse: '',
-                        bes: [],
-                        strategiePersonalizzazione: '',
-                        interdisciplinarita: []
+                        valutazione: '',
+                        contesto: '',
+                        inclusione: '',
+                        note: ''
                     });
                     setShowOutput(false);
                     setGeneratedPrompt('');
-                    setPrerequisitoInput('');
-                    setInterdisciplinaritaInput('');
-                    localStorage.removeItem('uda_draft');
+                    setMetodologieAltro('');
+                    localStorage.removeItem('lessonplan_draft');
                     showToast('Form resettato con successo', 'info');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
             
             const canGenerate = formData.disciplina && formData.classe && formData.titolo && 
-                               formData.competenze.length > 0 && formData.obiettivi && 
+                               formData.obiettivi && formData.faseIntroduzione &&
+                               formData.faseSviluppo && formData.faseConclusione &&
                                formData.metodologie.length > 0 && formData.valutazione;
             
             const getProgressBarColor = () => {
@@ -1481,6 +1486,41 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                     </div>
                     
                     <Hero />
+                    
+                    {/* Descrizione accademica */}
+                    <div className="container py-12">
+                        <div className="card" style={{background: 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%)', border: '2px solid #dbeafe', marginBottom: '0'}}>
+                            <h2 style={{fontSize: '1.625rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                📖 Cos'è un Lesson Plan?
+                            </h2>
+                            <p style={{fontSize: '1.05rem', lineHeight: 1.9, color: 'var(--text-primary)', marginBottom: '1.25rem'}}>
+                                Il <strong>lesson plan</strong> (o piano di lezione) è uno strumento di progettazione didattica sistematica che guida l'insegnante nella conduzione di una lezione strutturata e intenzionale. Secondo <strong>Hunter (1994)</strong>, nel suo modello "Mastery Teaching", un lesson plan efficace deve includere obiettivi chiari, attivazione delle conoscenze pregresse, input strutturato, verifica della comprensione e pratica guidata — trasformando ogni lezione in un'esperienza di apprendimento deliberata anziché casuale.
+                            </p>
+                            <p style={{fontSize: '1.05rem', lineHeight: 1.9, color: 'var(--text-primary)', marginBottom: '1.5rem'}}>
+                                <strong>Wiggins e McTighe (2005)</strong>, nel loro framework <em>Understanding by Design</em>, sottolineano come la progettazione a ritroso (<em>backward design</em>) sia fondamentale: si definiscono prima i risultati attesi e le prove di valutazione, poi si pianificano le attività didattiche. Questo approccio sposta il focus dall'insegnamento all'apprendimento effettivo, rendendo il lesson plan uno strumento vivo e flessibile.
+                            </p>
+                            <div style={{display: 'flex', flexWrap: 'wrap', gap: '1rem'}}>
+                                <a 
+                                    href="https://www.tandfonline.com/doi/full/10.1080/00220671003783148"
+                                    target="_blank" rel="noopener noreferrer"
+                                    style={{display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: '#eff6ff', border: '2px solid #bfdbfe', borderRadius: '0.5rem', color: '#1d4ed8', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.3s'}}
+                                    onMouseOver={e => e.currentTarget.style.background = '#dbeafe'}
+                                    onMouseOut={e => e.currentTarget.style.background = '#eff6ff'}
+                                >
+                                    🔗 Sato, M. (2010) — <em>Designing and delivering effective lessons</em> — Journal of Education
+                                </a>
+                                <a 
+                                    href="https://www.journals.uchicago.edu/doi/10.1086/461957"
+                                    target="_blank" rel="noopener noreferrer"
+                                    style={{display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: '#f0fdf4', border: '2px solid #bbf7d0', borderRadius: '0.5rem', color: '#15803d', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.3s'}}
+                                    onMouseOver={e => e.currentTarget.style.background = '#dcfce7'}
+                                    onMouseOut={e => e.currentTarget.style.background = '#f0fdf4'}
+                                >
+                                    🔗 Tyler, R.W. (1949) — <em>Basic Principles of Curriculum and Instruction</em> — University of Chicago Press
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     
                     {/* Templates */}
                     <div className="container py-12">
@@ -1795,6 +1835,47 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                         </label>
                                     ))}
                                 </div>
+                                
+                                {/* Campo Altro per metodologie */}
+                                <div style={{marginTop: '1rem'}}>
+                                    <label className="checkbox-container" style={{border: '2px solid var(--accent)', borderRadius: '0.5rem', background: '#fef3c7'}}>
+                                        <input 
+                                            type="checkbox"
+                                            checked={metodologieAltro !== ''}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setMetodologieAltro(' ');
+                                                } else {
+                                                    setMetodologieAltro('');
+                                                    const metodologieBase = ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning', 'Lezione Frontale Interattiva', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'];
+                                                    setFormData({...formData, metodologie: formData.metodologie.filter(m => metodologieBase.includes(m))});
+                                                }
+                                            }}
+                                            className="checkbox-custom"
+                                        />
+                                        <span style={{fontSize: '1.25rem', marginRight: '0.5rem'}}>✏️</span>
+                                        <span style={{fontSize: '0.875rem', fontWeight: 600, color: '#92400e'}}>Altro (specifica)</span>
+                                    </label>
+                                    {metodologieAltro !== '' && (
+                                        <input 
+                                            type="text"
+                                            value={metodologieAltro.trim()}
+                                            onChange={(e) => setMetodologieAltro(e.target.value)}
+                                            onBlur={() => {
+                                                const valore = metodologieAltro.trim();
+                                                if (valore) {
+                                                    const metodologieBase = ['Cooperative Learning', 'Flipped Classroom', 'Problem-Based Learning', 'Lezione Frontale Interattiva', 'Learning by Doing', 'Debate', 'Digital Storytelling', 'Gamification'];
+                                                    const newMetodologie = [...formData.metodologie.filter(m => metodologieBase.includes(m)), valore];
+                                                    setFormData({...formData, metodologie: newMetodologie});
+                                                }
+                                            }}
+                                            placeholder="Inserisci altra metodologia..."
+                                            className="form-input"
+                                            style={{marginTop: '0.5rem'}}
+                                            autoFocus
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                         
@@ -1857,6 +1938,46 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                     rows="2"
                                 />
                             </div>
+                        </div>
+                        
+                        {/* Bottone Genera Prompt */}
+                        <div className="card mb-8" style={{textAlign: 'center', background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)'}}>
+                            <p style={{fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '1.5rem'}}>
+                                {canGenerate 
+                                    ? '✅ Tutti i campi necessari sono compilati. Puoi generare il prompt!'
+                                    : '⚠️ Compila i campi obbligatori (*) per abilitare la generazione.'}
+                            </p>
+                            <button
+                                onClick={() => {
+                                    const prompt = generatePrompt();
+                                    setGeneratedPrompt(prompt);
+                                    setShowOutput(true);
+                                    setTimeout(() => {
+                                        document.getElementById('output-section')?.scrollIntoView({ behavior: 'smooth' });
+                                    }, 100);
+                                    showToast('Prompt generato con successo!', 'success');
+                                }}
+                                disabled={!canGenerate}
+                                style={{
+                                    padding: '1.25rem 3rem',
+                                    fontSize: '1.25rem',
+                                    fontWeight: 700,
+                                    background: canGenerate ? 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' : '#cbd5e1',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '0.75rem',
+                                    cursor: canGenerate ? 'pointer' : 'not-allowed',
+                                    boxShadow: canGenerate ? '0 10px 25px rgba(139,92,246,0.4)' : 'none',
+                                    transition: 'all 0.3s',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.75rem'
+                                }}
+                                onMouseOver={e => { if (canGenerate) e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                                onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                            >
+                                📝 Genera il Prompt per il Lesson Plan
+                            </button>
                         </div>
                         
                         {/* Output Section */}
@@ -2074,7 +2195,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                         <div className="footer-content">
                             <div className="footer-grid">
                                 <div className="footer-section">
-                                    <h4>UDA Smart Generator</h4>
+                                    <h4>UDA Smart</h4>
                                     <p>Strumento per la progettazione didattica basato su AI</p>
                                 </div>
                                 
@@ -2083,7 +2204,8 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                     <ul className="footer-links">
                                         <li><a href="index.html">Home</a></li>
                                         <li><a href="uda-lab.html">UDA Lab</a></li>
-                                        <li><a href="generator.html">UDA Smart Generator</a></li>
+                                        <li><a href="generator.html">UDA Generator</a></li>
+                                        <li><a href="lesson-plan.html">Lesson Plan</a></li>
                                     </ul>
                                 </div>
                                 
@@ -2119,7 +2241,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                 </a>
                                 
                                 <p style={{marginTop: '1.5rem', color: '#6b7280'}}>
-                                    © 2026 UDA Smart Generator | Made with ❤️ for educators
+                                    © 2026 UDA Smart | Made with ❤️ for educators
                                 </p>
                             </div>
                         </div>
