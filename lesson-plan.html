@@ -1152,20 +1152,24 @@
         // Main App Component
         function App() {
             const [formData, setFormData] = useState({
+                titolo: '',
                 disciplina: '',
                 classe: '',
-                durata: 10,
-                titolo: '',
-                competenze: [],
+                durataLezione: '60',
+                argomento: '',
                 obiettivi: '',
-                prerequisiti: [],
+                faseIntroduzione: '',
+                tempoIntroduzione: '10',
+                faseSviluppo: '',
+                tempoSviluppo: '35',
+                faseConclusione: '',
+                tempoConclusione: '15',
+                materiali: '',
                 metodologie: [],
-                strumenti: [],
-                valutazione: [],
-                contestoClasse: '',
-                bes: [],
-                strategiePersonalizzazione: '',
-                interdisciplinarita: []
+                valutazione: '',
+                contesto: '',
+                inclusione: '',
+                note: ''
             });
             
             const [showOutput, setShowOutput] = useState(false);
@@ -1173,87 +1177,128 @@
             const [isGenerating, setIsGenerating] = useState(false);
             const [toast, setToast] = useState(null);
             const [menuOpen, setMenuOpen] = useState(false);
-            const [prerequisitoInput, setPrerequisitoInput] = useState('');
-            const [interdisciplinaritaInput, setInterdisciplinaritaInput] = useState('');
             const [metodologieAltro, setMetodologieAltro] = useState('');
-            const [strumentiAltro, setStrumentiAltro] = useState('');
             const [activeModal, setActiveModal] = useState(null);
             
             const templates = [
                 {
                     icon: '⚛️',
-                    badge: 'Principianti',
+                    badge: 'Primaria',
                     badgeColor: 'green',
-                    title: 'UDA STEM - Scuola Primaria',
+                    title: 'Scienze - Primaria',
                     description: 'Approccio hands-on alle scienze',
-                    disciplina: 'Scienze + Matematica',
-                    classe: '3ª-5ª primaria',
+                    disciplina: 'Scienze',
+                    classe: '4ª Primaria',
                     durata: 8,
                     data: {
-                        disciplina: 'Scienze',
-                        classe: '4ª Primaria',
-                        durata: 8,
                         titolo: 'Il metodo scientifico: piccoli scienziati crescono',
-                        competenze: ['Competenza matematica e competenza in scienze, tecnologie e ingegneria', 'Competenza personale, sociale e capacità di imparare ad imparare'],
+                        disciplina: 'Scienze',
+                        classe: 'Scuola Primaria - Classe 4',
+                        durataLezione: '60',
+                        argomento: 'Il metodo scientifico applicato all\'osservazione della natura',
+                        obiettivi: 'Gli studenti saranno in grado di:\n- Formulare ipotesi su un fenomeno osservato\n- Progettare e condurre un semplice esperimento\n- Registrare e interpretare i dati raccolti',
+                        faseIntroduzione: 'Brainstorming: cosa osservate in natura? Presentazione del metodo scientifico con video animato (5 min)',
+                        tempoIntroduzione: '10',
+                        faseSviluppo: 'Esperimento in gruppi: osservazione di semi in germogliazione. Ogni gruppo registra su scheda strutturata ipotesi, procedura e risultati',
+                        tempoSviluppo: '35',
+                        faseConclusione: 'Condivisione risultati in plenaria. Riflessione guidata: le nostre ipotesi erano corrette?',
+                        tempoConclusione: '15',
+                        materiali: 'Semi, vasi, terra, acqua, righello, schede di osservazione, video YouTube "Il metodo scientifico" (3 min)',
                         metodologie: ['Learning by Doing', 'Cooperative Learning'],
-                        valutazione: 'Valutazione autentica (compito di realtà)'
+                        valutazione: 'Osservazione diretta durante l\'esperimento, scheda di registrazione dati compilata dal gruppo',
+                        contesto: '',
+                        inclusione: '',
+                        note: ''
                     }
                 },
                 {
-                    icon: '🔗',
-                    badge: 'Intermedio',
+                    icon: '📜',
+                    badge: 'Sec. I grado',
                     badgeColor: 'blue',
-                    title: 'Progetto Interdisciplinare',
-                    description: 'Connessioni tra discipline',
-                    disciplina: 'Italiano + Storia + Arte',
-                    classe: '2ª-3ª secondaria I grado',
+                    title: 'Storia - Rinascimento',
+                    description: 'Arte, letteratura e società',
+                    disciplina: 'Storia + Arte',
+                    classe: '3ª Sec. I grado',
                     durata: 15,
                     data: {
-                        disciplina: 'Italiano',
-                        classe: '3ª Secondaria I grado',
-                        durata: 15,
                         titolo: 'Il Rinascimento: arte, letteratura e società',
-                        competenze: ['Competenza alfabetica funzionale', 'Competenza in materia di consapevolezza ed espressione culturali'],
-                        metodologie: ['Problem-Based Learning (PBL)', 'Digital Storytelling'],
-                        interdisciplinarita: ['Storia', 'Arte']
+                        disciplina: 'Storia',
+                        classe: 'Scuola Secondaria di I grado - Classe 3',
+                        durataLezione: '60',
+                        argomento: 'Il Rinascimento italiano: contesto storico, artisti e opere principali',
+                        obiettivi: 'Gli studenti saranno in grado di:\n- Collocare il Rinascimento nel contesto storico europeo\n- Analizzare opere d\'arte del periodo usando un metodo critico\n- Creare una presentazione multimediale su un artista rinascimentale',
+                        faseIntroduzione: 'Flipped: gli studenti hanno visto a casa un video su Leonardo da Vinci. Avvio con domande stimolo: cosa vi ha colpito? Cosa sapete già?',
+                        tempoIntroduzione: '10',
+                        faseSviluppo: 'Lavoro in gruppi: ogni gruppo approfondisce un artista (Leonardo, Michelangelo, Raffaello, Botticelli) con scheda guida e fonti fornite. Creazione di una slide di presentazione',
+                        tempoSviluppo: '35',
+                        faseConclusione: 'Presentazione rapida di ogni gruppo (2 min). Sintesi finale dell\'insegnante sui tratti comuni del Rinascimento',
+                        tempoConclusione: '15',
+                        materiali: 'Schede di approfondimento per artista, computer o tablet, Google Slides, immagini ad alta risoluzione delle opere',
+                        metodologie: ['Flipped Classroom', 'Cooperative Learning', 'Digital Storytelling'],
+                        valutazione: 'Presentazione di gruppo valutata con rubrica (contenuto, chiarezza, originalità)',
+                        contesto: '',
+                        inclusione: '',
+                        note: ''
                     }
                 },
                 {
                     icon: '💬',
-                    badge: 'Avanzato',
+                    badge: 'Sec. II grado',
                     badgeColor: 'purple',
-                    title: 'Debate e Public Speaking',
-                    description: 'Competenze argomentative',
+                    title: 'Italiano - Debate',
+                    description: 'Argomentazione e public speaking',
                     disciplina: 'Italiano + Ed. Civica',
-                    classe: '3ª-5ª secondaria II grado',
+                    classe: '4ª Sec. II grado',
                     durata: 20,
                     data: {
-                        disciplina: 'Italiano',
-                        classe: '4ª Secondaria II grado',
-                        durata: 20,
                         titolo: 'L\'arte del dibattito: argomentare con metodo',
-                        competenze: ['Competenza alfabetica funzionale', 'Competenza in materia di cittadinanza'],
-                        metodologie: ['Debate', 'Role Playing'],
-                        interdisciplinarita: ['Educazione Civica']
+                        disciplina: 'Italiano',
+                        classe: 'Scuola Secondaria di II grado - Classe 4',
+                        durataLezione: '90',
+                        argomento: 'Tecniche di argomentazione e debate su temi di attualità',
+                        obiettivi: 'Gli studenti saranno in grado di:\n- Costruire un\'argomentazione strutturata (tesi, antitesi, sintesi)\n- Sostenere una posizione in modo chiaro e documentato\n- Ascoltare e rispettare il punto di vista altrui',
+                        faseIntroduzione: 'Presentazione delle regole del debate. Sorteggio delle posizioni (pro/contro) su tema assegnato: "I social media sono più un vantaggio o uno svantaggio per i giovani?"',
+                        tempoIntroduzione: '15',
+                        faseSviluppo: 'Preparazione in team (20 min): ricerca argomenti, selezione prove, assegnazione ruoli. Debate strutturato: apertura, repliche, chiusura',
+                        tempoSviluppo: '60',
+                        faseConclusione: 'Debriefing: cosa ha convinto di più? Voto della classe sull\'argomentazione migliore. Auto-valutazione individuale',
+                        tempoConclusione: '15',
+                        materiali: 'Regolamento debate stampato, timer, tablet per ricerche rapide, schede auto-valutazione',
+                        metodologie: ['Debate', 'Cooperative Learning'],
+                        valutazione: 'Griglia di osservazione per argomentazione (chiarezza, prove, rispetto tempi), auto-valutazione',
+                        contesto: '',
+                        inclusione: '',
+                        note: ''
                     }
                 },
                 {
                     icon: '🛡️',
-                    badge: 'Attuale',
+                    badge: 'Trasversale',
                     badgeColor: 'orange',
-                    title: 'Educazione Civica Digitale',
-                    description: 'Cittadinanza digitale',
+                    title: 'Ed. Civica Digitale',
+                    description: 'Cittadinanza digitale responsabile',
                     disciplina: 'Ed. Civica + Tecnologia',
                     classe: 'tutte le classi',
                     durata: 10,
                     data: {
-                        disciplina: 'Educazione Civica',
-                        classe: '2ª Secondaria II grado',
-                        durata: 10,
                         titolo: 'Cittadini digitali consapevoli',
-                        competenze: ['Competenza digitale', 'Competenza in materia di cittadinanza'],
-                        metodologie: ['Flipped Classroom', 'Gamification'],
-                        interdisciplinarita: ['Tecnologia']
+                        disciplina: 'Educazione Civica',
+                        classe: 'Scuola Secondaria di II grado - Classe 2',
+                        durataLezione: '60',
+                        argomento: 'Identità digitale, privacy e comportamenti responsabili online',
+                        obiettivi: 'Gli studenti saranno in grado di:\n- Distinguere informazioni vere e false online (fact-checking)\n- Riconoscere i rischi della condivisione di dati personali\n- Adottare comportamenti digitali responsabili',
+                        faseIntroduzione: 'Quiz Kahoot "Quanto sei digitalmente consapevole?" (10 domande). Discussione sui risultati sorprendenti',
+                        tempoIntroduzione: '15',
+                        faseSviluppo: 'Attività a stazioni: (1) Analisi di fake news, (2) Simulazione di impostazioni privacy, (3) Caso studio cyberbullismo. Rotazione ogni 10 minuti',
+                        tempoSviluppo: '35',
+                        faseConclusione: 'Creazione individuale di un "Patto digitale personale" con 3 impegni concreti. Condivisione volontaria',
+                        tempoConclusione: '10',
+                        materiali: 'Kahoot predisposto, esempi di fake news stampati, dispositivi per accesso a impostazioni privacy, scheda patto digitale',
+                        metodologie: ['Gamification', 'Learning by Doing'],
+                        valutazione: 'Osservazione partecipazione alle stazioni, qualità del patto digitale individuale',
+                        contesto: '',
+                        inclusione: '',
+                        note: ''
                     }
                 }
             ];
@@ -1261,19 +1306,22 @@
             // Calculate progress
             const calculateProgress = () => {
                 const fields = [
+                    formData.titolo,
                     formData.disciplina,
                     formData.classe,
-                    formData.titolo,
-                    formData.competenze.length > 0,
+                    formData.argomento,
                     formData.obiettivi,
+                    formData.faseIntroduzione,
+                    formData.faseSviluppo,
+                    formData.faseConclusione,
+                    formData.materiali,
                     formData.metodologie.length > 0,
-                    formData.strumenti.length > 0,
                     formData.valutazione
                 ];
                 
                 const completed = fields.filter(Boolean).length;
                 return {
-                    progress: (completed / fields.length) * 100,
+                    progress: Math.round((completed / fields.length) * 100),
                     completed,
                     total: fields.length
                 };
@@ -1284,10 +1332,10 @@
             // Auto-save
             useEffect(() => {
                 const timer = setTimeout(() => {
-                    localStorage.setItem('uda_draft', JSON.stringify({
+                    localStorage.setItem('lessonplan_draft', JSON.stringify({
                         timestamp: Date.now(),
                         formData,
-                        version: '2.0'
+                        version: '1.0'
                     }));
                 }, 500);
                 
@@ -1296,7 +1344,7 @@
             
             // Load draft
             useEffect(() => {
-                const draft = localStorage.getItem('uda_draft');
+                const draft = localStorage.getItem('lessonplan_draft');
                 if (draft) {
                     try {
                         const parsed = JSON.parse(draft);
