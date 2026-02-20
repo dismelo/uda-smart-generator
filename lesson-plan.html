@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulatore per generare prompt per lesson plan</title>
+    <title>EFT Lab - Lesson Plan Generator</title>
     <meta name="description" content="Genera prompt strutturati per creare lesson plan efficaci con qualsiasi LLM.">
     <meta name="author" content="Carmelo Distefano, Silvia Selvaggi">
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="UDA Smart Generator">
+    <meta property="og:title" content="EFT Lab Generator">
     <meta property="og:description" content="Crea UDA personalizzate con l'intelligenza artificiale">
     
     <style>
@@ -1071,8 +1071,8 @@
                         <div className="logo-container">
                             <div className="logo-icon gradient-primary">U</div>
                             <div>
-                                <div className="logo-text">UDA Smart</div>
-                                <div className="logo-subtitle">Smart Learning Design</div>
+                                <div className="logo-text">EFT Lab</div>
+                                <div className="logo-subtitle">Educational Future Technologies</div>
                             </div>
                         </div>
                         
@@ -1081,6 +1081,8 @@
                             <a href="uda-lab.html" className="nav-link">🔬 UDA Lab</a>
                             <a href="generator.html" className="nav-link">⚡ UDA Generator</a>
                             <a href="lesson-plan.html" className="nav-link nav-link-active">📝 Lesson Plan</a>
+                            <a href="digcomp-lesson-plan.html" style={{display: \'block\', padding: \'0.5rem 0\', color: \'var(--text-primary)\', textDecoration: \'none\', fontWeight: 500}}>💻 DigComp LP</a>
+                            <a href="digcomp-lesson-plan.html" className="nav-link">💻 DigComp LP</a>
                         </nav>
                         
                         <button onClick={onMenuToggle} className="menu-button">
@@ -2120,7 +2122,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                     
                     <Modal isOpen={activeModal === 'terms'} onClose={() => setActiveModal(null)} title="Termini d'uso">
                         <h3>📜 Condizioni di Utilizzo</h3>
-                        <p>Utilizzando UDA Smart Generator, accetti i seguenti termini:</p>
+                        <p>Utilizzando EFT Lab Generator, accetti i seguenti termini:</p>
                         
                         <h3>1. Accesso Libero</h3>
                         <p>Il servizio è fornito <strong>gratuitamente</strong> a tutti gli utenti. Non è richiesta registrazione o pagamento.</p>
@@ -2178,7 +2180,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                     
                     <Modal isOpen={activeModal === 'accessibility'} onClose={() => setActiveModal(null)} title="Accessibilità">
                         <h3>♿ Impegno per l'Accessibilità</h3>
-                        <p>UDA Smart Generator è progettato seguendo le linee guida <strong>WCAG 2.1 livello AA</strong> per garantire l'accessibilità a tutti gli utenti.</p>
+                        <p>EFT Lab Generator è progettato seguendo le linee guida <strong>WCAG 2.1 livello AA</strong> per garantire l'accessibilità a tutti gli utenti.</p>
                         
                         <h3>Caratteristiche di Accessibilità</h3>
                         <ul>
@@ -2243,7 +2245,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                         <div className="footer-content">
                             <div className="footer-grid">
                                 <div className="footer-section">
-                                    <h4>UDA Smart</h4>
+                                    <h4>EFT Lab</h4>
                                     <p>Strumento per la progettazione didattica basato su AI</p>
                                 </div>
                                 
@@ -2254,6 +2256,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                         <li><a href="uda-lab.html">UDA Lab</a></li>
                                         <li><a href="generator.html">UDA Generator</a></li>
                                         <li><a href="lesson-plan.html">Lesson Plan</a></li>
+                                        <li><a href="digcomp-lesson-plan.html">DigComp LP</a></li>
                                     </ul>
                                 </div>
                                 
@@ -2289,7 +2292,7 @@ Il lesson plan deve essere strutturato, chiaro e immediatamente utilizzabile in 
                                 </a>
                                 
                                 <p style={{marginTop: '1.5rem', color: '#6b7280'}}>
-                                    © 2026 UDA Smart | Made with ❤️ for educators
+                                    © 2026 EFT Lab | Made with ❤️ for educators
                                 </p>
                             </div>
                         </div>
