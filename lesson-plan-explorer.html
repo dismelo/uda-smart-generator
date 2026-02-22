@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFT Lab - Lesson Plan Explorer</title>
+<meta name="description" content="Archivio di lesson plan pronti all'uso dal sito Scuola Futura. Filtra per ordine di scuola e tematica.">
+<meta name="author" content="Carmelo Distefano, Silvia Selvaggi">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #eef0f8;
+    color: #1a2340;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── NAV ─────────────────────────────────── */
+  nav {
+    background: #fff;
+    border-bottom: 1px solid #dde2ef;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    text-decoration: none;
+  }
+  .nav-logo-icon {
+    width: 40px; height: 40px;
+    background: #1d3a8a;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 1.1rem;
+  }
+  .nav-logo-text h2 { font-size: .95rem; font-weight: 800; color: #1d3a8a; }
+  .nav-logo-text p  { font-size: .65rem; color: #6b7280; font-weight: 600; }
+  .nav-links {
+    display: flex; align-items: center; gap: .2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: #4b5563;
+    font-size: .82rem; font-weight: 700;
+    padding: .35rem .7rem; border-radius: 6px;
+    transition: background .15s;
+  }
+  .nav-links a:hover { background: #f3f4f6; }
+  .nav-links a.active { color: #1d3a8a; border-bottom: 2.5px solid #f59e0b; padding-bottom: .2rem; }
+
+  /* ─── HERO ─────────────────────────────────── */
+  header.hero {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+  }
+  header.hero h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    color: #1a2340;
+    line-height: 1.2;
+    max-width: 680px;
+    margin: 0 auto .8rem;
+  }
+  header.hero p {
+    color: #6b7280;
+    font-size: .95rem;
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ─── BLUE HERO CARD ───────────────────────── */
+  .hero-card {
+    max-width: 760px;
+    margin: 1.8rem auto 2.5rem;
+    background: linear-gradient(135deg, #1e3fa0 0%, #1a54c8 50%, #2563eb 100%);
+    border-radius: 18px;
+    padding: 2.5rem 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2rem;
+    box-shadow: 0 12px 40px rgba(30,63,160,.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,.04);
+    border-radius: 50%;
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -30px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,.04);
+    border-radius: 50%;
+  }
+  .hero-checklist {
+    display: flex; flex-direction: column; gap: .6rem;
+  }
+  .hero-checklist .check-item {
+    display: flex; align-items: center; gap: .55rem;
+    font-size: 1.05rem; font-weight: 700; color: #fff;
+  }
+  .hero-checklist .check-item .box {
+    width: 14px; height: 14px;
+    border: 2.5px solid;
+    border-radius: 3px;
+  }
+  .box.pink  { border-color: #f472b6; }
+  .box.green { border-color: #34d399; }
+  .box.cyan  { border-color: #67e8f9; }
+
+  .hero-right {
+    display: flex; flex-direction: column; align-items: center; gap: .7rem;
+  }
+  .bulb-icon {
+    width: 68px; height: 68px;
+    position: relative;
+  }
+  .bulb-icon svg { width: 100%; height: 100%; }
+  .hero-right p {
+    color: #fff; font-weight: 800;
+    font-size: 1.05rem; letter-spacing: .02em;
+  }
+
+
+  /* ─── FILTER SECTION ───────────────────────── */
+  .filter-wrap {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 0 1rem;
+  }
+  .filter-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,.07);
+  }
+  .filter-box h2 {
+    font-size: 1.05rem; font-weight: 800;
+    color: #1a2340; margin-bottom: 1.2rem;
+  }
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  .filter-group label {
+    display: block; font-size: .78rem; font-weight: 800;
+    color: #374151; text-transform: uppercase;
+    letter-spacing: .06em; margin-bottom: .4rem;
+  }
+  .filter-group select {
+    width: 100%;
+    padding: .6rem .9rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-family: inherit; font-size: .88rem; font-weight: 600;
+    color: #1a2340; background: #f9fafb;
+    cursor: pointer; outline: none;
+    transition: border-color .15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .8rem center;
+    background-size: 12px;
+    padding-right: 2rem;
+  }
+  .filter-group select:focus { border-color: #2563eb; background-color: #eff6ff; }
+
+  .filter-actions {
+    display: flex; gap: .8rem; align-items: center;
+  }
+  .btn-search {
+    background: linear-gradient(135deg, #1d3a8a, #2563eb);
+    color: #fff; border: none; border-radius: 10px;
+    padding: .65rem 1.6rem; font-family: inherit;
+    font-size: .9rem; font-weight: 800; cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    box-shadow: 0 4px 12px rgba(37,99,235,.35);
+  }
+  .btn-search:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-reset {
+    background: #f3f4f6; color: #374151;
+    border: 2px solid #e5e7eb; border-radius: 10px;
+    padding: .6rem 1.3rem; font-family: inherit;
+    font-size: .88rem; font-weight: 700; cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-reset:hover { background: #e5e7eb; }
+
+  /* ─── RESULTS ──────────────────────────────── */
+  .results-wrap {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    padding: 0 1rem;
+  }
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .results-count {
+    font-size: .88rem; font-weight: 700; color: #6b7280;
+  }
+  .results-count span { color: #2563eb; font-size: 1.1rem; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.07);
+    display: flex; flex-direction: column;
+    transition: transform .2s, box-shadow .2s;
+    border: 1.5px solid #f0f2f8;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  }
+  .card-header {
+    background: linear-gradient(135deg, #1e3fa0, #2563eb);
+    padding: 1.1rem 1.3rem .9rem;
+  }
+  .card-header h3 {
+    font-size: 1rem; font-weight: 800; color: #fff;
+    line-height: 1.3;
+  }
+  .card-body { padding: 1rem 1.3rem; flex: 1; }
+  .card-abstract {
+    font-size: .84rem; color: #374151;
+    line-height: 1.6; margin-bottom: .9rem;
+  }
+  .card-meta {
+    display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .8rem;
+  }
+  .badge {
+    display: inline-block;
+    background: #eff6ff; color: #1d4ed8;
+    border-radius: 20px; padding: .2rem .65rem;
+    font-size: .73rem; font-weight: 700;
+  }
+  .badge.ordine { background: #f0fdf4; color: #15803d; }
+  .badge.campo  { background: #fef3c7; color: #92400e; }
+  .badge.tag    { background: #eff6ff; color: #1d4ed8; }
+
+  .card-footer {
+    padding: .8rem 1.3rem 1.1rem;
+    border-top: 1px solid #f0f2f8;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .qr-container {
+    flex-shrink: 0;
+    width: 140px; height: 140px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 6px;
+    overflow: hidden;
+  }
+  .qr-container canvas, .qr-container img {
+    width: 128px !important;
+    height: 128px !important;
+  }
+  .card-link-wrap {
+    flex: 1;
+  }
+  .card-link-wrap p {
+    font-size: .72rem; color: #6b7280; font-weight: 600; margin-bottom: .3rem;
+  }
+  .card-link {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: #1d3a8a; color: #fff;
+    text-decoration: none; border-radius: 8px;
+    padding: .45rem .9rem; font-size: .78rem; font-weight: 700;
+    transition: background .15s;
+  }
+  .card-link:hover { background: #2563eb; }
+
+  .no-results {
+    text-align: center; padding: 3rem 1rem;
+    color: #9ca3af;
+  }
+  .no-results .icon { font-size: 3rem; margin-bottom: .8rem; }
+  .no-results p { font-size: .95rem; font-weight: 600; }
+
+  /* ─── FOOTER ─────────────────────────────── */
+  footer {
+    background: #111827;
+    color: rgba(255,255,255,0.9);
+    padding: 3rem 2.5rem 2rem;
+    margin-top: auto;
+  }
+  footer .footer-content {
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  footer p {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+  }
+  footer strong {
+    color: white;
+  }
+  footer .copyright {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  @media (max-width: 600px) {
+    .hero-card { flex-direction: column; padding: 1.8rem 1.5rem; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">E</div>
+    <div class="nav-logo-text">
+      <h2>EFT Lab</h2>
+      <p>Educational Future Technologies</p>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html"><span>🏠</span> Home page</a></li>
+    <li><a href="uda-lab.html"><span>🔬</span> UDA Lab</a></li>
+    <li><a href="generator.html"><span>⚡</span> UDA Generator</a></li>
+    <li><a href="lesson-plan.html"><span>📝</span> Lesson Plan</a></li>
+    <li><a href="lesson-plan-explorer.html" class="active"><span>📚</span> LP Explorer</a></li>
+    <li><a href="digcomp-lesson-plan.html"><span>💻</span> DigComp LP</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <h1>Risorse dal sito Scuola Futura</h1>
+  <p>Lesson plan pronti all'uso da scaricare e utilizzare subito in classe</p>
+</header>
+
+<!-- HERO CARD -->
+<div class="hero-card">
+  <div class="hero-checklist">
+    <div class="check-item"><div class="box pink"></div> Équipe</div>
+    <div class="check-item"><div class="box green"></div> Formative</div>
+    <div class="check-item"><div class="box cyan"></div> Territoriali</div>
+  </div>
+  <div class="hero-right">
+    <div class="bulb-icon">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Raggi esterni -->
+        <circle cx="60" cy="20" r="4" fill="white" opacity="0.8"/>
+        <circle cx="100" cy="35" r="3" fill="white" opacity="0.6"/>
+        <circle cx="20" cy="35" r="3" fill="white" opacity="0.6"/>
+        <circle cx="110" cy="60" r="3" fill="white" opacity="0.5"/>
+        <circle cx="10" cy="60" r="3" fill="white" opacity="0.5"/>
+        
+        <!-- Bulbo lampadina -->
+        <path d="M60 30c-12 0-22 10-22 22c0 7.5 3.8 14 9.5 18v8.5c0 1.5 1 2.5 2.5 2.5h20c1.5 0 2.5-1 2.5-2.5V70c5.7-4 9.5-10.5 9.5-18c0-12-10-22-22-22z" 
+              fill="rgba(255,255,255,0.2)" 
+              stroke="white" 
+              stroke-width="3"/>
+        
+        <!-- Base lampadina -->
+        <rect x="50" y="82" width="20" height="4" rx="1" fill="white"/>
+        <rect x="52" y="88" width="16" height="3" rx="1" fill="white"/>
+        
+        <!-- Filamento -->
+        <line x1="60" y1="50" x2="60" y2="65" stroke="white" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <p>Creatività + Automazione</p>
+  </div>
+</div>
+
+<!-- FILTER SECTION -->
+<div class="filter-wrap">
+  <div class="filter-box">
+    <h2>🔍 Cerca schede didattiche per filtro</h2>
+    <div class="filter-grid">
+      <div class="filter-group">
+        <label>Ordine di Scuola</label>
+        <select id="sel-ordine">
+          <option value="">— Tutti —</option>
+          <option>Scuola dell'infanzia</option>
+          <option>Scuola primaria</option>
+          <option>Scuola secondaria di I grado</option>
+          <option>Scuola secondaria di II grado</option>
+          <option>CPIA</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Tematica / Tag</label>
+        <select id="sel-tag">
+          <option value="">— Tutti —</option>
+          <option>#3D-AR-VR</option>
+          <option>#agenda2030</option>
+          <option>#apprendimentoautentico</option>
+          <option>#arte&amp;poesia</option>
+          <option>#benessere</option>
+          <option>#chatbot</option>
+          <option>#cittadinanzadigitale</option>
+          <option>#CLIL</option>
+          <option>#coding</option>
+          <option>#cooperativelearning</option>
+          <option>#copyright</option>
+          <option>#creatività</option>
+          <option>#debate</option>
+          <option>#digitalstorytelling</option>
+          <option>#donneSTEM</option>
+          <option>#ecologia</option>
+          <option>#educazione</option>
+          <option>#educazioneambientale</option>
+          <option>#educazionecivica</option>
+          <option>#empatia</option>
+          <option>#eticaAI</option>
+          <option>#frattali</option>
+          <option>#gamebasedlearning</option>
+          <option>#gamebook</option>
+          <option>#gamification</option>
+          <option>#gentilezza</option>
+          <option>#geometriasolida</option>
+          <option>#geolocalizzazione</option>
+          <option>#IA</option>
+          <option>#inquiry</option>
+          <option>#making</option>
+          <option>#matematica</option>
+          <option>#mediaeducation</option>
+          <option>#memoria</option>
+          <option>#metaverso</option>
+          <option>#outdooreducation</option>
+          <option>#outdoor</option>
+          <option>#podcasting</option>
+          <option>#responsabilità</option>
+          <option>#roboticaeducativa</option>
+          <option>#scenariImmersivi</option>
+          <option>#SEL</option>
+          <option>#sicurezzainrete</option>
+          <option>#socialnetwork</option>
+          <option>#STEAM</option>
+          <option>#STEM</option>
+          <option>#storytelling</option>
+          <option>#tinkering</option>
+        </select>
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button class="btn-search" onclick="applyFilters()">Cerca schede</button>
+      <button class="btn-reset" onclick="resetFilters()">↺ Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results-wrap" id="results-wrap" style="display:none;">
+  <div class="results-header">
+    <div class="results-count">Schede trovate: <span id="count">0</span></div>
+  </div>
+  <div class="cards-grid" id="cards-grid"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <p>Pagina web prodotta da <strong>Carmelo Distefano</strong><br>
+    in collaborazione (e grazie alle idee) di <strong>Silvia Selvaggi</strong></p>
+    <p class="copyright">© 2026 EFT Lab | Made with ❤️ for educators</p>
+  </div>
+</footer>
+
+<script>
+const SCHEDE = [
+  {
+    titolo: "A piccoli passi in un paese green",
+    abstract: "Attraverso l'esperienza diretta, il gioco, il procedere per tentativi ed errori, i bambini realizzeranno un plastico che rappresenterà un paese ideale su un reticolo da loro disegnato. I docenti scopriranno come l'approccio del Tinkering integri i campi di esperienza, con una crescita relazionale ed emotiva. Saranno toccati i goal 7 \"Energia pulita e accessibile\" e 11 \"Città e comunità sostenibili\" dell'Agenda 2030.",
+    ordini: ["Scuola dell'infanzia", "Scuola primaria"],
+    campi: ["La conoscenza del mondo", "Immagini, suoni, colori"],
+    tags: ["#agenda2030", "#coding", "#educazionecivica", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/A+piccoli+passi+in+un+paese+green.pdf/f6c6e42c-726c-cf3b-fd9c-48c685ed1f2e?t=1743170931573"
+  },
+  {
+    titolo: "A spasso nello spazio (celeste) e nel tempo",
+    abstract: "La proposta mira ad accompagnare il docente all'uso critico di un sistema generativo nella didattica, includendo consultazioni, produzioni e rielaborazioni.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado"],
+    campi: ["Matematica", "Scienze", "Informatica"],
+    tags: ["#IA", "#STEM", "#coding"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/A+spasso+nello+spazio+%28celeste%29+e+nel+tempo.pdf/abec1763-1534-e090-e7b8-74f0132bc574?t=1743170272658"
+  },
+  {
+    titolo: "Conoscere e valutare l'AI per agire in modo responsabile",
+    abstract: "Gli studenti sono guidati ad utilizzare gli Agenti Artificiali Conversazionali (AAC) per analizzare l'interazione uomo-macchina.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Educazione civica", "Informatica"],
+    tags: ["#eticaAI", "#chatbot", "#benessere", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Conoscere+e+valutare+l%E2%80%99AI+per+agire+in+modo+responsabile.pdf/af6219cf-c64d-ed00-3d6f-01fcdb57ed0e?t=1743169389938"
+  },
+  {
+    titolo: "Copyright",
+    abstract: "L'attività prevede la realizzazione di un debate sul tema del diritto d'autore e della proprietà intellettuale in relazione alla rielaborazione creativa delle opere. I partecipanti svilupperanno capacità di argomentazione, pensiero critico e consapevolezza delle nuove sfide legate alla proprietà intellettuale.",
+    ordini: ["Scuola secondaria di II grado"],
+    campi: ["Italiano", "Educazione civica", "Diritto"],
+    tags: ["#creatività", "#debate", "#copyright"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+MOOC+Polo+CARO+-+DEF.pdf/828fdb95-ecb2-a41d-a520-5c5bcb359c9b?t=1743675216994"
+  },
+  {
+    titolo: "Dal giornalino al podcast",
+    abstract: "Gli studenti saranno coinvolti nella creazione di un giornalino scolastico e nella produzione di un podcast collegato. L'obiettivo è realizzare un prodotto multimediale finale che sarà condiviso con la comunità scolastica.",
+    ordini: ["Scuola primaria"],
+    campi: ["Italiano", "Tecnologia"],
+    tags: ["#storytelling", "#cooperativelearning", "#podcasting"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Dal+giornalino+al+podcast.pdf/08db98f6-dc16-1689-a82c-351f9bfe02e2?t=1743170354451"
+  },
+  {
+    titolo: "Dal Passato al Futuro. Lo Zaino della Sopravvivenza con Unguenti e Nutrimenti",
+    abstract: "L'attività combina l'apprendimento pratico con l'uso di strumenti digitali per arricchire l'esperienza educativa e inclusiva, e incoraggia tutti a partecipare attivamente nella creazione di soluzioni per la sopravvivenza.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado"],
+    campi: ["Scienze", "Tecnologia"],
+    tags: ["#inquiry", "#STEM", "#ecologia"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/MOOC+ID+254820_EFT+Sardegna_Strumenti+digitali+per+l%27inclusione_+potenziare+l%27apprendimento+con+la+tecnologia.pdf/a79958d3-4ff7-31f6-a8d7-fd2e01984aa3?t=1751010230110"
+  },
+  {
+    titolo: "Dalla scienza dei ponti alla magia dei grafi",
+    abstract: "L'attività didattica esplora la scienza dei ponti attraverso un approccio interdisciplinare che unisce matematica, ingegneria e tecnologia, utilizzando le metodologie Inquiry-Based Learning e Tinkering.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado"],
+    campi: ["Matematica", "Scienze", "Tecnologia"],
+    tags: ["#inquiry", "#tinkering", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Dalla+scienza+dei+ponti+alla+magia+dei+grafi.pdf/23c7be83-2b44-622b-9d06-0b17de08d78d?t=1743168211406"
+  },
+  {
+    titolo: "Esaflex Spinning Game",
+    abstract: "L'attività combina matematica ricreativa, making e gamification in un'esperienza didattica STEAM. Gli alunni scoprono i flexagoni, li trasformano in trottole, progettano elementi di gioco attraverso strumenti digitali e costruiscono un gioco da tavolo interdisciplinare.",
+    ordini: ["Scuola primaria"],
+    campi: ["Matematica", "Tecnologia", "Arte e immagine"],
+    tags: ["#gamification", "#making", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/MOOC+ID+259534+-+EFT+Lazio+EFT+Emilia+Romagna+-+Esaflex+Spinning+Game.pdf/077784fd-833d-3349-bad6-7c73775dc5fe?t=1750845063202"
+  },
+  {
+    titolo: "Fate il vostro gioco",
+    abstract: "Obiettivo del percorso è appassionare alla lettura gli studenti, in un'epoca in cui si legge sempre di meno, attraverso uno strumento ludico che sfrutta le potenzialità del digitale.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Italiano", "Informatica"],
+    tags: ["#gamebook", "#storytelling"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+Fate+il+vostro+gioco.pdf/a8338afe-6ae3-a2b7-bcc6-811117143dbf?t=1743674770048"
+  },
+  {
+    titolo: "Geometria e coding in 3D",
+    abstract: "L'esperienza prevede la creazione di oggetti in 3D anche utilizzando il coding attraverso l'uso di forme geometriche nello spazio a tre dimensioni. Questi oggetti potranno poi essere stampati o utilizzati in artefatti digitali di Realtà Aumentata e/o Virtuale.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado"],
+    campi: ["Matematica", "Tecnologia", "Informatica"],
+    tags: ["#coding", "#geometriasolida", "#3D-AR-VR"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/MOOC+ID+250083+-+EFT+Lazio+-+Geometria+e+coding+in+3D.pdf/67b42931-a506-dda1-b742-fbc2a900cc94?t=1750845591801"
+  },
+  {
+    titolo: "JIGSAW – Vademecum per internauti",
+    abstract: "Gli alunni riflettono sui comportamenti adeguati da adottare in rete al fine di proteggere se stessi e le loro famiglie dal rischio di furto di identità, per distinguere informazioni e interagire con gli altri in modo responsabile. Al termine del lavoro realizzano un decalogo di buone pratiche.",
+    ordini: ["Scuola secondaria di I grado", "CPIA"],
+    campi: ["Educazione civica", "Informatica"],
+    tags: ["#cittadinanzadigitale", "#mediaeducation", "#sicurezzainrete"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Vademecum+per+internauti.pdf/629c675c-cf3b-b2d8-8c79-b487ce714a06?t=1743170756425"
+  },
+  {
+    titolo: "L'isola che vorrei",
+    abstract: "L'attività coinvolge gli studenti in una caccia al tesoro nel metaverso, utilizzando la metodologia della gamification.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Tecnologia", "Educazione civica", "Geografia"],
+    tags: ["#metaverso", "#scenariImmersivi", "#agenda2030"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/L%E2%80%99isola+che+vorrei.pdf/5c41f01e-c8bc-d30f-9901-218c9620ca32?t=1743169952487"
+  },
+  {
+    titolo: "La natura dei colori",
+    abstract: "Percorso interdisciplinare che unisce scienza, arte e tecnologia, coinvolgendo gli studenti nella scoperta dei colori naturali. Le attività pratiche e digitali favoriscono creatività, collaborazione e riflessione, promuovendo un apprendimento ecosostenibile e inclusivo.",
+    ordini: ["Scuola dell'infanzia", "Scuola primaria"],
+    campi: ["La conoscenza del mondo", "Immagini, suoni, colori", "Arte e immagine"],
+    tags: ["#inquiry", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/La+natura+dei+colori.pdf/80d0e394-6620-8c9e-db3c-5ed531977868?t=1743170537180"
+  },
+  {
+    titolo: "La scienza nelle bolle",
+    abstract: "Il laboratorio utilizza le bolle di sapone per esplorare alcune proprietà geometriche, fisiche, ottiche e chimiche della natura. Un oggetto familiare diventa strumento per l'apprendimento STEAM.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Scienze", "Matematica", "Arte e immagine"],
+    tags: ["#STEAM", "#outdooreducation"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+Liceo+Pellico-Peano+Cuneo+-+La+scienza+nelle+bolle.pdf/84f45872-010c-857e-1073-2374415480e9?t=1743675283460"
+  },
+  {
+    titolo: "Learning calendar: apprendere a piccoli… giochi!",
+    abstract: "La scheda guida nella realizzazione di un percorso di apprendimento, consolidamento e ripasso che coinvolge gli studenti nella progettazione di giochi interattivi organizzabili in calendari interattivi, giochi da tavolo, escape room per esperienze di Gamification e Game Based Learning.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado", "Scuola secondaria di II grado"],
+    campi: ["Matematica", "Italiano", "Tecnologia"],
+    tags: ["#gamebasedlearning", "#gamification", "#mediaeducation"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Learning+calendar_+apprendere+a+piccoli...giochi%21+In+matrice.pdf/9ea7f1df-60c5-7a63-1e48-342b07bf1acb?t=1743169046280"
+  },
+  {
+    titolo: "Magikering",
+    abstract: "Le illusioni ottiche diventano lo spunto per riflettere su realtà e apparenza e proporre attività di storytelling creativo e riflessivo, agganciandosi a temi trasversali di educazione civica.",
+    ordini: ["Scuola dell'infanzia", "Scuola primaria", "Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Arte e immagine", "Italiano", "Immagini, suoni, colori"],
+    tags: ["#STEAM", "#tinkering", "#storytelling"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+Magikering.pdf/ef002c2d-ea72-2bd7-652b-af03a1f54f62?t=1743674879399"
+  },
+  {
+    titolo: "Maker di macchine a reazione",
+    abstract: "L'attività prevede la realizzazione di un 'veicolo a reazione' utilizzando materiale povero e alcuni semplici componenti elettrici.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado"],
+    campi: ["Scienze", "Tecnologia"],
+    tags: ["#STEM", "#making", "#CLIL"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/MOOC+-++258511+-+Maker+di+macchine+a+reazione.pdf/ba0fd76a-e585-30df-e52b-2e1e5b72839b?t=1744811175411"
+  },
+  {
+    titolo: "Mappiamo il territorio",
+    abstract: "Lavorando con mappe satellitari e cartacee, in un'esperienza di apprendimento all'aperto con calcoli di distanze e attività di coding, gli alunni impareranno ad identificare i luoghi d'interesse prossimi alla propria scuola raccogliendo informazioni e foto.",
+    ordini: ["Scuola primaria"],
+    campi: ["Tecnologia", "Matematica", "Educazione civica"],
+    tags: ["#geolocalizzazione", "#outdoor"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Mappiamo+il+territorio.pdf/fa1ca3b2-27a3-a323-c963-d5d47c251752?t=1743170441867"
+  },
+  {
+    titolo: "Memoria viva: esplorare l'Olocausto attraverso l'arte",
+    abstract: "L'attività è progettata per insegnare l'importanza della memoria storica dell'Olocausto e della sua commemorazione attraverso l'arte. Attraverso l'analisi di opere d'arte e poesie, gli studenti proporranno ai compagni un contest artistico.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado"],
+    campi: ["Storia", "Arte e immagine", "Italiano"],
+    tags: ["#memoria", "#digitalstorytelling", "#arte&poesia"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Memoria+viva_+MATRICE+DXC+%281%29.pdf/4c13c1d8-97f7-9e7a-f785-8161a48e4318?t=1743775420051"
+  },
+  {
+    titolo: "Monumaking a blocchi: investigazione doppia sui monumenti",
+    abstract: "Gli studenti investigano sui monumenti del proprio territorio, integrando percorsi matematico-tecnologici e storico-artistici, per promuoverli attraverso tecnologie digitali e modellazione 3D.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Matematica", "Tecnologia", "Storia dell'Arte"],
+    tags: ["#3D-AR-VR", "#coding", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/MonuMaking+a+blocchi+investigazione+doppia+sul+tuo+monumento.pdf/d2c4c8ab-49ce-6a1d-1a7b-173e17f90ffe?t=1743171085305"
+  },
+  {
+    titolo: "Puliamo i fondali marini: un racconto in codice",
+    abstract: "L'Obiettivo 14 dell'Agenda 2030 viene introdotto con immagini e discussioni sull'importanza di proteggere gli oceani. Gli alunni identificano pericoli per la vita marina, creano un cartellone del fondale e animano la storia con ScratchJr, usando coding.",
+    ordini: ["Scuola dell'infanzia", "Scuola primaria"],
+    campi: ["La conoscenza del mondo", "Tecnologia"],
+    tags: ["#coding", "#digitalstorytelling", "#cittadinanzadigitale"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+ITIS+Galilei+Roma+-+Puliamo+i+fondali+marini_+un+racconto+in+codice.pdf/2145bfa1-3c8e-9204-3c1e-78788531fc78?t=1743675332240"
+  },
+  {
+    titolo: "Raccontiamo a fumetti",
+    abstract: "La scheda guida nella rielaborazione di racconti tratti dalla raccolta 'Le Cosmicomiche' di Italo Calvino e nella loro trasformazione in narrazioni cooperative a fumetti.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado", "CPIA"],
+    campi: ["Italiano", "Arte e immagine"],
+    tags: ["#storytelling", "#cittadinanzadigitale", "#mediaeducation"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Raccontiamo+a+fumetti+in+matrice.pdf/1148fd77-9fbc-ca1c-b38d-649b63cce4c0?t=1743168798779"
+  },
+  {
+    titolo: "Respons-ABILITÀ",
+    abstract: "Attraverso una serie di attività, gli alunni sono portati a riflettere sul valore della responsabilità e delle conseguenze derivanti dalla mancata assunzione della stessa. Si stimoleranno capacità di riflessione, previsione e presa di decisione responsabile.",
+    ordini: ["Scuola primaria"],
+    campi: ["Educazione civica"],
+    tags: ["#responsabilità", "#benessere", "#educazione"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Respons-ABILITA%CC%81.pdf/449fec80-1d5e-8e0c-7745-71fa362c4253?t=1743168664106"
+  },
+  {
+    titolo: "Robot 'N GO",
+    abstract: "La sfida tra team di studenti consiste nel costruire un robot e programmarlo per fargli eseguire un viaggio sicuro attraverso vari punti di interesse rappresentati da immagini sul pavimento. Ogni team programma il proprio robot nella maniera più efficace possibile.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Informatica", "Matematica", "Tecnologia"],
+    tags: ["#STEAM", "#coding", "#roboticaeducativa"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/ROBOT+%E2%80%98N+GO.pdf/93d390f2-5dcc-9004-90ba-8e941b177d3d?t=1743170841675"
+  },
+  {
+    titolo: "StorIArte",
+    abstract: "L'attività offre ai docenti una panoramica completa sull'intelligenza artificiale applicata alle discipline umanistiche, evidenziandone il potenziale nella valorizzazione e tutela del patrimonio digitale e richiamando le principali linee guida internazionali.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Arte e immagine", "Informatica", "Storia dell'Arte"],
+    tags: ["#STEAM", "#coding", "#digitalstorytelling"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/scheda+_Risorse+didattiche_StorIArte.docx+%281%29.pdf/c1136993-8dba-6958-8c5d-4e6254b581d7?t=1764331254854"
+  },
+  {
+    titolo: "Storie in movimento",
+    abstract: "Un percorso esperienziale per sviluppare negli studenti competenze digitali, spirito critico e creatività, aiutandoli a navigare consapevolmente nel mondo dei social e dei contenuti online.",
+    ordini: ["Scuola primaria"],
+    campi: ["Italiano", "Tecnologia", "Educazione civica"],
+    tags: ["#socialnetwork", "#apprendimentoautentico", "#creatività"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/scheda+POLO+FERRARIS.pdf/d72225aa-3a8b-dcec-9370-1d52ed6ff03e?t=1744811085048"
+  },
+  {
+    titolo: "Sulle tracce di Emma",
+    abstract: "Percorso di apprendimento alla scoperta di Emma Castelnuovo, della sua vita, del contesto storico in cui ha operato, del suo apporto rivoluzionario all'insegnamento della matematica.",
+    ordini: ["Scuola secondaria di I grado", "Scuola secondaria di II grado", "CPIA"],
+    campi: ["Matematica", "Storia"],
+    tags: ["#matematica", "#STEAM", "#donneSTEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Sulle+tracce+di+Emma.pdf/0908fa60-9757-bc89-4ea4-50b1ab7e81fc?t=1743170167475"
+  },
+  {
+    titolo: "Super sentinelle dell'ambiente",
+    abstract: "Un percorso didattico che utilizza la gamification per introdurre i bambini della scuola dell'infanzia ai concetti base della raccolta differenziata e della sostenibilità ambientale. Attraverso tre missioni, gli alunni impareranno a distinguere e riconoscere i rifiuti, acquisendo badge per ogni missione superata.",
+    ordini: ["Scuola dell'infanzia"],
+    campi: ["La conoscenza del mondo", "Il sé e l'altro"],
+    tags: ["#educazionecivica", "#educazioneambientale", "#gamification", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Super+Sentinelle+dell%E2%80%99Ambiente.pdf/84188a18-12c2-78e5-3453-1ba8e448bbca?t=1743171012669"
+  },
+  {
+    titolo: "Tutti per uno… uno per tutti!",
+    abstract: "Attraverso una serie di attività analogiche gli alunni sono portati a riflettere sul valore del reciproco aiuto e della complementarità tra le persone, evidenziando come essere empatici e gentili produca effetti positivi su sé e sugli altri.",
+    ordini: ["Scuola primaria"],
+    campi: ["Educazione civica"],
+    tags: ["#empatia", "#gentilezza", "#benessere"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Tutti+per+uno...+uno+per+tutti.pdf/8ecea1dd-758e-1498-6dbf-3db28dbe8202?t=1743168814105"
+  },
+  {
+    titolo: "Una valigia per ricordare",
+    abstract: "L'esperienza è un percorso educativo articolato in quattro tappe. Gli studenti costruiscono una 'valigia' che serve per raccogliere ricordi. Questi oggetti diventano strumenti per attività di gamification, storytelling e tinkering.",
+    ordini: ["Scuola primaria"],
+    campi: ["Italiano", "Tecnologia"],
+    tags: ["#SEL", "#digitalstorytelling", "#STEM"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Una+valigia+per+ricordare.pdf/579ec7d1-9de4-b9c0-5d39-a36a910b82b1?t=1743160892725"
+  },
+  {
+    titolo: "Verità o inganno: viaggio nel mondo delle fake news",
+    abstract: "Percorso di apprendimento IBL per rendere studentesse e studenti utenti consapevoli del web e guidarli nell'elaborare strategie di valutazione critica delle informazioni in rete.",
+    ordini: ["Scuola secondaria di I grado", "CPIA"],
+    campi: ["Educazione civica", "Italiano"],
+    tags: ["#sicurezzainrete", "#cittadinanzadigitale", "#mediaeducation"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2912344/Verit%C3%A0+o+inganno.pdf/7bef7194-987d-e3f6-242a-28ba1db6d3b4?t=1743170083764"
+  },
+  {
+    titolo: "Zoomando nell'infinitamente piccolo",
+    abstract: "In questo laboratorio ci occupiamo di frattali e di alcune loro proprietà. Si realizzeranno costruzioni di frattali particolarmente semplici e suggestivi come il fiocco di neve, il triangolo di Sierpinski, l'albero e i cristalli di ghiaccio, trovandone esempi in natura e in opere d'arte.",
+    ordini: ["Scuola primaria", "Scuola secondaria di I grado", "Scuola secondaria di II grado"],
+    campi: ["Matematica", "Arte e immagine", "Scienze"],
+    tags: ["#STEAM", "#frattali"],
+    url: "https://scuolafutura.pubblica.istruzione.it/documents/290056/2929756/Scheda+Liceo+Pellico-Peano+Cuneo+-+Zoomando+nell%27infinitamente+piccolo.pdf/b3e32ac8-01a8-4f49-c17e-609685f45f1e?t=1743675394774"
+  }
+];
+
+let qrInstances = {};
+
+function renderCards(lista) {
+  const grid = document.getElementById('cards-grid');
+  document.getElementById('count').textContent = lista.length;
+  qrInstances = {};
+
+  if (lista.length === 0) {
+    grid.innerHTML = `
+      <div class="no-results" style="grid-column:1/-1">
+        <div class="icon">🔍</div>
+        <p>Nessuna scheda trovata con i filtri selezionati.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = lista.map((s, i) => `
+    <div class="card">
+      <div class="card-header">
+        <h3>${s.titolo}</h3>
+      </div>
+      <div class="card-body">
+        <p class="card-abstract">${s.abstract}</p>
+        <div class="card-meta">
+          ${s.ordini.map(o => `<span class="badge ordine">🏫 ${o}</span>`).join('')}
+          ${s.campi.map(c => `<span class="badge campo">📚 ${c}</span>`).join('')}
+          ${s.tags.map(t => `<span class="badge tag">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="qr-container" id="qr-${i}"></div>
+        <div class="card-link-wrap">
+          <p>Scansiona il QR o apri il link:</p>
+          <a class="card-link" href="${s.url}" target="_blank" rel="noopener">
+            📄 Apri scheda PDF
+          </a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Genera QR codes
+  lista.forEach((s, i) => {
+    try {
+      new QRCode(document.getElementById('qr-' + i), {
+        text: s.url,
+        width: 128, height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.L
+      });
+    } catch(e) { /* silent */ }
+  });
+}
+
+function applyFilters() {
+  const ordine = document.getElementById('sel-ordine').value;
+  const tag    = document.getElementById('sel-tag').value;
+
+  const result = SCHEDE.filter(s => {
+    const okOrdine = !ordine || s.ordini.some(o => o.toLowerCase().includes(ordine.toLowerCase()) || ordine.toLowerCase().includes(o.toLowerCase().split(' ').slice(0,3).join(' ')));
+    const okTag    = !tag    || s.tags.some(t => t.toLowerCase() === tag.toLowerCase());
+    return okOrdine && okTag;
+  });
+
+  document.getElementById('results-wrap').style.display = 'block';
+  renderCards(result);
+}
+
+function resetFilters() {
+  document.getElementById('sel-ordine').value = '';
+  document.getElementById('sel-tag').value    = '';
+  document.getElementById('results-wrap').style.display = 'none';
+  document.getElementById('cards-grid').innerHTML = '';
+  document.getElementById('count').textContent = '0';
+}
+
+// On load: show only the filter box, no cards
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('results-wrap').style.display = 'none';
+});
+</script>
+</body>
+</html>
