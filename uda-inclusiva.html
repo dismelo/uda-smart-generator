@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFT Lab - UdA Inclusiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2a5298;
+    --accent: #e8a020;
+    --accent-light: #f5c842;
+    --bg: #f4f6fa;
+    --bg-card: #ffffff;
+    --text: #1c2b3a;
+    --text-muted: #5a6a7a;
+    --border: #d0dae8;
+    --success: #2e7d5a;
+    --step-inactive: #c8d4e0;
+    --step-done: #2e7d5a;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(26,58,92,0.10);
+  }
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+
+  /* HEADER */
+  .app-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 28px 0 20px; border-bottom: 4px solid var(--accent); }
+  .app-header h1 { font-family: 'Lora', serif; font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+  .app-header p { opacity: 0.82; margin: 6px 0 0; font-size: 0.9rem; font-weight: 300; }
+  .autosave-badge { font-size: 0.78rem; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 3px 12px; color: #fff; cursor: pointer; user-select: none; transition: background 0.2s; }
+  .autosave-badge:hover { background: rgba(255,255,255,0.25); }
+  .autosave-badge.active { background: rgba(46,125,90,0.5); border-color: #7ecba0; }
+
+  /* PROGRESS NAV */
+  .progress-nav { background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 16px 0 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .step-list { display: flex; overflow-x: auto; padding: 0 16px 12px; gap: 4px; scrollbar-width: thin; }
+  .step-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 60px; cursor: pointer; border: none; background: none; padding: 4px 5px; border-radius: 8px; transition: background 0.15s; }
+  .step-item:hover { background: var(--bg); }
+  .step-bubble { width: 32px; height: 32px; border-radius: 50%; background: var(--step-inactive); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; transition: background 0.2s, transform 0.2s; }
+  .step-item.active .step-bubble { background: var(--primary); transform: scale(1.15); box-shadow: 0 0 0 4px rgba(26,58,92,0.18); }
+  .step-item.done .step-bubble { background: var(--step-done); }
+  .step-label { font-size: 0.62rem; color: var(--text-muted); text-align: center; line-height: 1.2; max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .step-item.active .step-label { color: var(--primary); font-weight: 600; }
+  .step-connector { flex: 1; height: 2px; background: var(--border); align-self: center; min-width: 6px; }
+  .progress-global { height: 4px; background: var(--border); }
+  .progress-global .bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.4s ease; }
+
+  /* MAIN */
+  .main-wrap { max-width: 900px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  /* CARD */
+  .step-card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 32px; border: 1px solid var(--border); }
+  .step-title { font-family: 'Lora', serif; font-size: 1.25rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+  .step-subtitle { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; }
+
+  /* FIELDS */
+  .form-label { font-weight: 500; color: var(--text); margin-bottom: 4px; font-size: 0.88rem; }
+  .form-control, .form-select { border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.88rem; background: #fafbfd; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+  .form-control:focus, .form-select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(42,82,152,0.12); background: #fff; }
+  .helper-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; }
+  .helper-text i { color: var(--accent); }
+  .required-star { color: #c0392b; }
+  .badge-optional { font-size: 0.68rem; background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: 10px; padding: 1px 7px; margin-left: 6px; font-weight: 400; }
+  .check-group { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .form-check-label { font-size: 0.85rem; color: var(--text); }
+  .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+  .tooltip-icon { color: var(--accent); cursor: help; font-size: 0.9em; }
+
+  /* BUTTONS */
+  .nav-btns { display: flex; justify-content: space-between; margin-top: 28px; gap: 10px; flex-wrap: wrap; }
+  .btn-primary-custom { background: var(--primary); border: none; color: #fff; border-radius: 8px; padding: 10px 24px; font-weight: 600; font-size: 0.88rem; transition: background 0.2s, transform 0.1s; cursor: pointer; }
+  .btn-primary-custom:hover { background: var(--primary-light); transform: translateY(-1px); }
+  .btn-outline-custom { background: transparent; border: 2px solid var(--border); color: var(--text); border-radius: 8px; padding: 9px 22px; font-weight: 500; font-size: 0.88rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .btn-outline-custom:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-accent { background: var(--accent); border: none; color: #fff; border-radius: 8px; padding: 10px 24px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+  .btn-accent:hover { background: var(--accent-light); color: var(--text); }
+  .btn-danger-outline { background: transparent; border: 2px solid #dc3545; color: #dc3545; border-radius: 8px; padding: 9px 22px; font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .btn-danger-outline:hover { background: #dc3545; color: #fff; }
+  .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.4); color: #fff; border-radius: 8px; padding: 9px 18px; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; }
+  .btn-outline-white:hover { background: rgba(255,255,255,0.15); }
+
+  /* ALERTS */
+  .alert-warn { background: #fff8ed; border: 1px solid #f0c56e; border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px; font-size: 0.83rem; color: #7a5200; margin-bottom: 16px; }
+  .section-divider { border: none; border-top: 2px dashed var(--border); margin: 24px 0; }
+
+  /* OUTPUT PANEL */
+  .output-panel { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+  .output-header { background: linear-gradient(90deg, var(--primary), var(--primary-light)); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .output-header h2 { font-family: 'Lora', serif; color: #fff; font-size: 1.1rem; margin: 0; }
+  .output-tabs button { background: rgba(255,255,255,0.12); border: none; color: rgba(255,255,255,0.7); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; }
+  .output-tabs button.active, .output-tabs button:hover { background: rgba(255,255,255,0.28); color: #fff; }
+  #output-preview { padding: 28px 32px; line-height: 1.7; font-size: 0.9rem; overflow-y: auto; max-height: 70vh; }
+  #output-preview h2 { font-family: 'Lora', serif; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; margin-top: 28px; }
+  #output-preview h3 { color: var(--primary-light); font-size: 0.97rem; font-weight: 600; margin-top: 16px; }
+  #output-preview table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 10px 0; }
+  #output-preview th { background: var(--primary); color: #fff; padding: 8px 12px; text-align: left; }
+  #output-preview td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  #output-preview tr:nth-child(even) td { background: #f4f7fb; }
+  #output-preview ul { padding-left: 20px; }
+  #output-preview li { margin: 3px 0; }
+  .tag-bes { display: inline-block; background: #e8f4ff; border: 1px solid #9cc5ed; color: #1a3a5c; border-radius: 12px; padding: 1px 10px; font-size: 0.78rem; margin: 2px; }
+  .section-block { border-left: 3px solid var(--accent); padding-left: 14px; margin: 10px 0; }
+  #output-markdown { padding: 20px 24px; font-family: 'Courier New', monospace; font-size: 0.82rem; background: #1a2332; color: #c8d8e8; line-height: 1.6; white-space: pre-wrap; overflow-y: auto; max-height: 70vh; border: none; width: 100%; resize: none; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+
+  /* PRINT */
+  @media print {
+    .progress-nav, .app-header, .step-card, #globalActions, .output-header .btn-group, .output-tabs, .btn-accent, .btn-outline-white { display: none !important; }
+    .output-panel { border: none; box-shadow: none; }
+    .output-header { background: none !important; color: #000; }
+    .output-header h2 { color: #000; }
+    #output-preview { max-height: none; padding: 0; }
+    body { background: #fff; }
+  }
+
+  @media (max-width: 600px) {
+    .step-card { padding: 18px 14px; }
+    #output-preview { padding: 16px 14px; }
+    .output-header { padding: 12px 14px; }
+  }
+</style>
+</head>
+
+<style>
+  /* NAV EFT LAB */
+  .eft-nav {
+    background: #fff;
+    border-bottom: 1px solid #dde2ef;
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .eft-nav-logo {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    text-decoration: none;
+  }
+  .eft-nav-logo-icon {
+    width: 40px; height: 40px;
+    background: #1d3a8a;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 1.1rem;
+  }
+  .eft-nav-logo-text h2 { font-size: .95rem; font-weight: 800; color: #1d3a8a; margin: 0; }
+  .eft-nav-logo-text p  { font-size: .65rem; color: #6b7280; font-weight: 600; margin: 0; }
+  .eft-nav-links {
+    display: flex; align-items: center; gap: .2rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .eft-nav-links a {
+    text-decoration: none; color: #4b5563;
+    font-size: .82rem; font-weight: 700;
+    padding: .35rem .7rem; border-radius: 6px;
+    transition: background .15s;
+  }
+  .eft-nav-links a:hover { background: #f3f4f6; }
+  .eft-nav-links a.active { color: #1d3a8a; border-bottom: 2.5px solid #f59e0b; padding-bottom: .2rem; }
+  
+  @media (max-width: 600px) {
+    .eft-nav { padding: 0 1rem; }
+    .eft-nav-links { display: none; }
+  }
+</style>
+
+<nav class="eft-nav">
+  <a class="eft-nav-logo" href="index.html">
+    <div class="eft-nav-logo-icon">E</div>
+    <div class="eft-nav-logo-text">
+      <h2>EFT Lab</h2>
+      <p>Educational Future Technologies</p>
+    </div>
+  </a>
+  <ul class="eft-nav-links">
+    <li><a href="index.html"><span>🏠</span> Home page</a></li>
+    <li><a href="uda-lab.html"><span>🔬</span> UDA Lab</a></li>
+    <li><a href="generator.html"><span>⚡</span> UDA Generator</a></li>
+    <li><a href="lesson-plan.html"><span>📝</span> Lesson Plan</a></li>
+    <li><a href="lesson-plan-explorer.html"><span>📚</span> LP Explorer</a></li>
+    <li><a href="uda-inclusiva.html" class="active"><span>🎯</span> UDA Inclusiva</a></li>
+    <li><a href="digcomp-lesson-plan.html"><span>💻</span> DigComp LP</a></li>
+  </ul>
+</nav>
+<body>
+
+<style>
+  /* BANNER BLU */
+  .eft-hero-card {
+    max-width: 760px;
+    margin: 1.5rem auto;
+    background: linear-gradient(135deg, #1e3fa0 0%, #1a54c8 50%, #2563eb 100%);
+    border-radius: 18px;
+    padding: 2.5rem 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2rem;
+    box-shadow: 0 12px 40px rgba(30,63,160,.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .eft-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,.04);
+    border-radius: 50%;
+  }
+  .eft-hero-card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -30px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,.04);
+    border-radius: 50%;
+  }
+  .eft-hero-checklist {
+    display: flex; flex-direction: column; gap: .6rem;
+  }
+  .eft-hero-checklist .check-item {
+    display: flex; align-items: center; gap: .55rem;
+    font-size: 1.05rem; font-weight: 700; color: #fff;
+  }
+  .eft-hero-checklist .check-item .box {
+    width: 14px; height: 14px;
+    border: 2.5px solid;
+    border-radius: 3px;
+  }
+  .box.pink  { border-color: #f472b6; }
+  .box.green { border-color: #34d399; }
+  .box.cyan  { border-color: #67e8f9; }
+  
+  .eft-hero-right {
+    display: flex; flex-direction: column; align-items: center; gap: .7rem;
+  }
+  .eft-bulb-icon {
+    width: 68px; height: 68px;
+    position: relative;
+  }
+  .eft-bulb-icon svg { width: 100%; height: 100%; }
+  .eft-hero-right p {
+    color: #fff; font-weight: 800;
+    font-size: 1.05rem; letter-spacing: .02em;
+  }
+  
+  @media (max-width: 600px) {
+    .eft-hero-card { flex-direction: column; padding: 1.8rem 1.5rem; }
+  }
+</style>
+
+<div class="eft-hero-card">
+  <div class="eft-hero-checklist">
+    <div class="check-item"><div class="box pink"></div> Équipe</div>
+    <div class="check-item"><div class="box green"></div> Formative</div>
+    <div class="check-item"><div class="box cyan"></div> Territoriali</div>
+  </div>
+  <div class="eft-hero-right">
+    <div class="eft-bulb-icon">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="20" r="4" fill="white" opacity="0.8"/>
+        <circle cx="100" cy="35" r="3" fill="white" opacity="0.6"/>
+        <circle cx="20" cy="35" r="3" fill="white" opacity="0.6"/>
+        <circle cx="110" cy="60" r="3" fill="white" opacity="0.5"/>
+        <circle cx="10" cy="60" r="3" fill="white" opacity="0.5"/>
+        <path d="M60 30c-12 0-22 10-22 22c0 7.5 3.8 14 9.5 18v8.5c0 1.5 1 2.5 2.5 2.5h20c1.5 0 2.5-1 2.5-2.5V70c5.7-4 9.5-10.5 9.5-18c0-12-10-22-22-22z" 
+              fill="rgba(255,255,255,0.2)" 
+              stroke="white" 
+              stroke-width="3"/>
+        <rect x="50" y="82" width="20" height="4" rx="1" fill="white"/>
+        <rect x="52" y="88" width="16" height="3" rx="1" fill="white"/>
+        <line x1="60" y1="50" x2="60" y2="65" stroke="white" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <p>Creatività + Automazione</p>
+  </div>
+</div>
+
+
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <h1><i class="bi bi-mortarboard-fill me-2" aria-hidden="true"></i>UdA Inclusiva</h1>
+        <p>Generatore guidato di Unità Didattiche per studenti con BES &bull; Nessun dato personale richiesto</p>
+      </div>
+      <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
+        <span id="autosave-toggle" class="autosave-badge active" onclick="toggleAutosave()" role="switch" aria-checked="true" tabindex="0" title="Clicca per attivare/disattivare il salvataggio automatico">
+          <i class="bi bi-cloud-check me-1"></i><span id="autosave-label">Salvataggio auto: ON</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- PROGRESS NAV -->
+<nav class="progress-nav" aria-label="Avanzamento passi">
+  <div class="container">
+    <div class="step-list" id="stepList" role="tablist"></div>
+  </div>
+  <div class="progress-global"><div class="bar" id="progressBar" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
+</nav>
+
+<!-- MAIN -->
+<main class="main-wrap">
+  <div id="app"></div>
+
+  <!-- Output panel -->
+  <div class="output-panel mt-4" id="outputPanel" style="display:none">
+    <div class="output-header">
+      <h2><i class="bi bi-file-earmark-text me-2"></i>Anteprima UdA Generata</h2>
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <div class="output-tabs">
+          <button id="tab-preview" class="active" onclick="switchTab('preview')" aria-selected="true">Anteprima</button>
+          <button id="tab-markdown" onclick="switchTab('markdown')" aria-selected="false">Markdown</button>
+        </div>
+        <button class="btn-accent" onclick="copyOutput()" title="Copia testo output"><i class="bi bi-clipboard me-1"></i>Copia</button>
+        <button class="btn-outline-white" onclick="printPDF()" title="Stampa o salva come PDF"><i class="bi bi-printer me-1"></i>Stampa / PDF</button>
+      </div>
+    </div>
+    <div id="output-preview"></div>
+    <textarea id="output-markdown" style="display:none" readonly aria-label="Output in formato Markdown"></textarea>
+  </div>
+
+  <!-- Global actions -->
+  <div class="d-flex gap-2 flex-wrap mt-3 justify-content-end" id="globalActions">
+    <button class="btn-accent" onclick="generateUDA()"><i class="bi bi-lightning-charge-fill me-1"></i>Genera / Aggiorna UdA</button>
+    <button class="btn-danger-outline" onclick="resetAll()"><i class="bi bi-arrow-counterclockwise me-1"></i>Reset</button>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════
+// MODELLO DATI
+// ══════════════════════════════════════════════════════
+const model = {
+  titolo:'', ordineScuola:'', classeSezione:'', discipline:'', argomento:'',
+  durataOre:'', periodo:'', nLezioni:'', contesto:'',
+  descClasse:'', bisogniChecked:[], bisogniNote:'',
+  pdpPresente:'non_specificato', pdpIndicazioni:'', puntiForza:'',
+  prerequisiti:'', recupero:'',
+  obDisciplinari:'', obTrasversali:'', obEssenziali:'', obPersonalizzati:'',
+  contIrrinunciabili:'', contApprofondimenti:'', contSemplificare:'',
+  metodologie:[], metodologieNote:'',
+  strInclusiveChecked:[], strInclusiveNote:'',
+  materialiComuni:'', materialiCompensativi:'',
+  misureDispensative:'',
+  fasi:'', supportoDocente:'', differenzBES:'',
+  verificaItinere:'', indicatoriMonitoraggio:'',
+  cosaDiValutare:[], modalitaValutazione:[], criteri:'', adattamentiVal:'',
+  evidenze:'', funzionato:'', migliorare:'', prossimiPassi:''
+};
+
+let currentStep = 0;
+let autosaveEnabled = true;
+
+// ══ STEP DEFINITIONS ══
+const steps = [
+  { label:'A. Dati', icon:'bi-info-circle', title:'A. Dati iniziali dell\'unità', subtitle:'Inserisci le informazioni di base dell\'Unità Didattica / Unità di Apprendimento.', render: renderStepA },
+  { label:'B. Classe', icon:'bi-people', title:'B. Profilo della classe e BES', subtitle:'Descrivi il gruppo classe e i bisogni educativi speciali rilevanti.', render: renderStepB },
+  { label:'C. Prerequisiti', icon:'bi-arrow-up-circle', title:'C. Prerequisiti', subtitle:'Indica le conoscenze e abilità già acquisite necessarie per affrontare l\'unità.', render: renderStepC },
+  { label:'D. Obiettivi', icon:'bi-bullseye', title:'D. Obiettivi di apprendimento', subtitle:'Scrivi gli obiettivi in modo osservabile e verificabile.', render: renderStepD },
+  { label:'E. Contenuti', icon:'bi-book', title:'E. Contenuti e nuclei fondanti', subtitle:'Definisci cosa si insegna, cosa è irrinunciabile e come semplificare.', render: renderStepE },
+  { label:'F. Metodi', icon:'bi-tools', title:'F. Metodologie didattiche', subtitle:'Scegli le strategie pedagogiche più adatte alla classe.', render: renderStepF },
+  { label:'G. Inclusione', icon:'bi-heart', title:'G. Strategie inclusive e personalizzazione', subtitle:'Indica gli adattamenti specifici per rispondere ai bisogni rilevati.', render: renderStepG },
+  { label:'H. Materiali', icon:'bi-folder2-open', title:'H. Strumenti e materiali', subtitle:'Elenca i materiali comuni e quelli compensativi previsti.', render: renderStepH },
+  { label:'I. Dispensative', icon:'bi-shield-check', title:'I. Misure dispensative', subtitle:'Indica le misure dispensative previste, se pertinenti e coerenti con i documenti di riferimento.', render: renderStepI },
+  { label:'J. Attività', icon:'bi-calendar3', title:'J. Articolazione delle attività', subtitle:'Descrivi le fasi operative con tempi e differenziazione per BES.', render: renderStepJ },
+  { label:'K. Verifica', icon:'bi-clipboard-check', title:'K. Verifica in itinere', subtitle:'Strumenti e indicatori per il monitoraggio durante lo svolgimento dell\'unità.', render: renderStepK },
+  { label:'L. Valutazione', icon:'bi-bar-chart', title:'L. Valutazione', subtitle:'Criteri, modalità e adattamenti valutativi.', render: renderStepL },
+  { label:'M. Riflessione', icon:'bi-chat-quote', title:'M. Documentazione e osservazioni finali', subtitle:'Metariflessione: cosa ha funzionato, cosa migliorare, prossimi passi.', render: renderStepM },
+];
+
+// ══ HELPER FUNCTIONS ══
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function nl2li(s){ return (s||'').split('\n').filter(l=>l.trim()).map(l=>`<li>${esc(l.trim().replace(/^[-*•]\s*/,''))}</li>`).join(''); }
+function nl2p(s){ return (s||'').split('\n').filter(l=>l.trim()).map(l=>`<p style="margin:4px 0">${esc(l.trim())}</p>`).join(''); }
+function labelWithTip(text, tip, req=false){
+  return `${text}${req?'<span class="required-star" aria-hidden="true"> *</span>':'<span class="badge-optional">opzionale</span>'} ${tip?`<span class="tooltip-icon" title="${tip.replace(/"/g,'&quot;')}" aria-label="Suggerimento: ${tip.replace(/"/g,'')}" role="img"><i class="bi bi-question-circle-fill" aria-hidden="true"></i></span>`:''}`;
+}
+
+// ══ AUTOSAVE ══
+function toggleAutosave(){
+  autosaveEnabled = !autosaveEnabled;
+  const badge = document.getElementById('autosave-toggle');
+  const lbl = document.getElementById('autosave-label');
+  badge.setAttribute('aria-checked', autosaveEnabled);
+  badge.classList.toggle('active', autosaveEnabled);
+  lbl.textContent = autosaveEnabled ? 'Salvataggio auto: ON' : 'Salvataggio auto: OFF';
+}
+function saveToStorage(){
+  if(!autosaveEnabled) return;
+  collectData();
+  try { localStorage.setItem('uda_inclusiva_v1', JSON.stringify(model)); } catch(e){}
+}
+function loadFromStorage(){
+  try {
+    const d = JSON.parse(localStorage.getItem('uda_inclusiva_v1')||'null');
+    if(d) Object.assign(model, d);
+  } catch(e){}
+}
+
+// ══ COLLECT DATA from DOM ══
+function collectData(){
+  const textFields = [
+    'titolo','ordineScuola','classeSezione','discipline','argomento','durataOre','periodo','nLezioni','contesto',
+    'descClasse','bisogniNote','pdpPresente','pdpIndicazioni','puntiForza',
+    'prerequisiti','recupero',
+    'obDisciplinari','obTrasversali','obEssenziali','obPersonalizzati',
+    'contIrrinunciabili','contApprofondimenti','contSemplificare',
+    'metodologieNote','strInclusiveNote',
+    'materialiComuni','materialiCompensativi','misureDispensative',
+    'fasi','supportoDocente','differenzBES',
+    'verificaItinere','indicatoriMonitoraggio',
+    'criteri','adattamentiVal',
+    'evidenze','funzionato','migliorare','prossimiPassi'
+  ];
+  textFields.forEach(f => {
+    const el = document.getElementById(f);
+    if(el) model[f] = el.value;
+  });
+  model.bisogniChecked = Array.from(document.querySelectorAll('.cb-bisogni:checked')).map(e=>e.value);
+  model.metodologie = Array.from(document.querySelectorAll('.cb-metodologie:checked')).map(e=>e.value);
+  model.strInclusiveChecked = Array.from(document.querySelectorAll('.cb-strInclusive:checked')).map(e=>e.value);
+  model.cosaDiValutare = Array.from(document.querySelectorAll('.cb-valutare:checked')).map(e=>e.value);
+  model.modalitaValutazione = Array.from(document.querySelectorAll('.cb-modalitaVal:checked')).map(e=>e.value);
+}
+
+// ══ VALIDATE ══
+function validate(){
+  collectData();
+  const warnings = [];
+  if(!model.titolo) warnings.push('Titolo UdA mancante (Sezione A)');
+  if(!model.ordineScuola) warnings.push('Ordine di scuola non selezionato (Sezione A)');
+  if(!model.discipline) warnings.push('Disciplina/e non indicate (Sezione A)');
+  if(!model.argomento) warnings.push('Argomento/tema mancante (Sezione A)');
+  if(!model.obDisciplinari) warnings.push('Obiettivi disciplinari non inseriti (Sezione D)');
+  if(!model.obEssenziali) warnings.push('Obiettivi essenziali/minimi mancanti (Sezione D)');
+  return warnings;
+}
+
+// ══ STEP RENDERERS ══
+
+function renderStepA(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="titolo" class="form-label">${labelWithTip('Titolo dell\'UdA / Lezione','Es: "Il ciclo dell\'acqua" oppure "La Resistenza italiana"',true)}</label>
+      <input type="text" class="form-control" id="titolo" placeholder="Inserisci un titolo chiaro e sintetico" aria-required="true" value="${esc(model.titolo)}">
+    </div>
+    <div class="col-md-6">
+      <label for="ordineScuola" class="form-label">${labelWithTip('Ordine di scuola','Seleziona l\'ordine scolastico per calibrare la complessità',true)}</label>
+      <select class="form-select" id="ordineScuola" aria-required="true">
+        <option value="">— Seleziona —</option>
+        <option value="infanzia" ${model.ordineScuola==='infanzia'?'selected':''}>Scuola dell'Infanzia</option>
+        <option value="primaria" ${model.ordineScuola==='primaria'?'selected':''}>Scuola Primaria</option>
+        <option value="sec1" ${model.ordineScuola==='sec1'?'selected':''}>Scuola Secondaria I grado</option>
+        <option value="sec2" ${model.ordineScuola==='sec2'?'selected':''}>Scuola Secondaria II grado</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label for="classeSezione" class="form-label">${labelWithTip('Classe / Sezione','Es: 3A, 2ª elementare, Sezione Farfalle')}</label>
+      <input type="text" class="form-control" id="classeSezione" placeholder="Es: 2A" value="${esc(model.classeSezione)}">
+    </div>
+    <div class="col-md-6">
+      <label for="discipline" class="form-label">${labelWithTip('Disciplina/e','Puoi indicare più discipline se percorso interdisciplinare',true)}</label>
+      <input type="text" class="form-control" id="discipline" placeholder="Es: Italiano, Scienze, Matematica" value="${esc(model.discipline)}">
+    </div>
+    <div class="col-md-6">
+      <label for="argomento" class="form-label">${labelWithTip('Argomento / Tema centrale','Il nucleo tematico o concettuale dell\'unità',true)}</label>
+      <input type="text" class="form-control" id="argomento" placeholder="Es: Le frazioni, La cellula, Il dopoguerra" value="${esc(model.argomento)}">
+    </div>
+    <div class="col-md-4">
+      <label for="durataOre" class="form-label">${labelWithTip('Durata complessiva (ore)','Ore totali stimate per l\'intera unità')}</label>
+      <input type="text" class="form-control" id="durataOre" placeholder="Es: 10" value="${esc(model.durataOre)}">
+    </div>
+    <div class="col-md-4">
+      <label for="periodo" class="form-label">${labelWithTip('Periodo dell\'anno','Mese o quadrimestre in cui si svolge')}</label>
+      <input type="text" class="form-control" id="periodo" placeholder="Es: Gennaio–Febbraio" value="${esc(model.periodo)}">
+    </div>
+    <div class="col-md-4">
+      <label for="nLezioni" class="form-label">${labelWithTip('N. lezioni previste','Quante lezioni compongono l\'unità')}</label>
+      <input type="text" class="form-control" id="nLezioni" placeholder="Es: 6" value="${esc(model.nLezioni)}">
+    </div>
+    <div class="col-12">
+      <label for="contesto" class="form-label">${labelWithTip('Contesto e risorse disponibili','Spazi, tecnologie, dispositivi o risorse della scuola')}</label>
+      <textarea class="form-control" id="contesto" rows="2" placeholder="Es: LIM, aula informatica 1 volta/settimana, insegnante di sostegno 3h settimanali, tablet 1:1">${esc(model.contesto)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepB(){
+  const bisogni = [
+    ['lettura_scrittura','Difficoltà di lettura / scrittura (possibile DSA)'],
+    ['attenzione','Difficoltà di attenzione e concentrazione'],
+    ['comprensione','Difficoltà nella comprensione del testo'],
+    ['tempi','Tempi di elaborazione più lunghi'],
+    ['linguaL2','Lingua italiana come L2'],
+    ['emotivo_relazionale','Fragilità emotivo-relazionale'],
+    ['supporti_visivi','Bisogno di supporti visivi e grafici'],
+    ['autonomia','Difficoltà nell\'autonomia organizzativa'],
+    ['comunicazione','Difficoltà comunicative o espressive'],
+    ['motorio','Difficoltà motorie o sensoriali'],
+    ['svantaggio','Svantaggio socio-economico o culturale'],
+    ['gifted','Eccellenza / talento specifico'],
+  ];
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="descClasse" class="form-label">${labelWithTip('Descrizione sintetica del gruppo classe','Livello medio, clima relazionale, motivazione, dinamiche rilevanti',true)}</label>
+      <textarea class="form-control" id="descClasse" rows="3" placeholder="Es: Classe di 22 studenti con livello eterogeneo, clima generalmente positivo. Buona motivazione per le attività laboratoriali. Presenza di studenti con ritmi di apprendimento molto diversi.">${esc(model.descClasse)}</textarea>
+    </div>
+    <div class="col-12">
+      <label class="form-label d-block mb-2">${labelWithTip('Bisogni educativi rilevati nella classe','Spunta tutti i bisogni presenti; aggiungi note specifiche nel campo sotto')}</label>
+      <div class="check-group"><div class="row g-2">
+        ${bisogni.map(([v,l])=>`<div class="col-md-6"><div class="form-check">
+          <input class="form-check-input cb-bisogni" type="checkbox" id="b_${v}" value="${v}" ${model.bisogniChecked.includes(v)?'checked':''}>
+          <label class="form-check-label" for="b_${v}">${l}</label>
+        </div></div>`).join('')}
+      </div></div>
+      <div class="helper-text"><i class="bi bi-info-circle-fill"></i> Descrivi bisogni in termini didattici/operativi, non clinici. Nessun dato personale viene raccolta.</div>
+    </div>
+    <div class="col-12">
+      <label for="bisogniNote" class="form-label">${labelWithTip('Note aggiuntive sui bisogni rilevati','Specifica senza indicare nomi o dati personali degli studenti')}</label>
+      <textarea class="form-control" id="bisogniNote" rows="2" placeholder="Es: 2 studenti con PDP per DSA (dislessia/disortografia), 1 studente con italiano L2 livello A2, 1 studente con BES per svantaggio">${esc(model.bisogniNote)}</textarea>
+    </div>
+    <div class="col-md-4">
+      <label for="pdpPresente" class="form-label">${labelWithTip('PDP / PEI presenti','Indica solo la presenza, non il contenuto')}</label>
+      <select class="form-select" id="pdpPresente">
+        <option value="non_specificato" ${model.pdpPresente==='non_specificato'?'selected':''}>— Non specificato —</option>
+        <option value="presenti" ${model.pdpPresente==='presenti'?'selected':''}>Sì, presenti</option>
+        <option value="non_presenti" ${model.pdpPresente==='non_presenti'?'selected':''}>Non presenti</option>
+        <option value="in_redazione" ${model.pdpPresente==='in_redazione'?'selected':''}>In fase di redazione</option>
+      </select>
+    </div>
+    <div class="col-md-8">
+      <label for="pdpIndicazioni" class="form-label">${labelWithTip('Principali indicazioni didattiche dai PDP/PEI','Solo indicazioni generali, nessun dato personale')}</label>
+      <input type="text" class="form-control" id="pdpIndicazioni" placeholder="Es: Tempi aggiuntivi, uso mappe, verifiche orali, testo semplificato" value="${esc(model.pdpIndicazioni)}">
+    </div>
+    <div class="col-12">
+      <label for="puntiForza" class="form-label">${labelWithTip('Punti di forza e risorse della classe','Cosa funziona bene? Su cosa fare leva per includere tutti')}</label>
+      <textarea class="form-control" id="puntiForza" rows="2" placeholder="Es: Buona collaborazione tra pari, interesse per le attività digitali, disponibilità al peer tutoring">${esc(model.puntiForza)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepC(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="prerequisiti" class="form-label">${labelWithTip('Conoscenze, abilità e lessico richiesti','Cosa deve già saper fare/conoscere lo studente per affrontare l\'unità',true)}</label>
+      <textarea class="form-control" id="prerequisiti" rows="4" placeholder="Es:\n- Conoscenza delle quattro operazioni aritmetiche\n- Comprensione di testi narrativi semplici\n- Lessico di base relativo agli ecosistemi\n- Uso base del computer">${esc(model.prerequisiti)}</textarea>
+      <div class="helper-text"><i class="bi bi-lightbulb-fill"></i> Scrivi un prerequisito per riga per una visualizzazione ottimale nell'output.</div>
+    </div>
+    <div class="col-12">
+      <label for="recupero" class="form-label">${labelWithTip('Azioni di recupero e semplificazione previste','Come supporti chi non possiede tutti i prerequisiti?')}</label>
+      <textarea class="form-control" id="recupero" rows="3" placeholder="Es: Scheda glossario di supporto distribuita nella prima lezione; attività di attivazione con flashcard per richiamare i concetti base">${esc(model.recupero)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepD(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="obDisciplinari" class="form-label">${labelWithTip('Obiettivi disciplinari','Usa verbi osservabili: sa riconoscere, sa descrivere, è in grado di applicare...',true)}</label>
+      <textarea class="form-control" id="obDisciplinari" rows="4" placeholder="Es:\n- Sa riconoscere le caratteristiche principali del testo espositivo\n- È in grado di applicare la regola dell'accordo di genere e numero\n- Sa descrivere il ciclo dell'acqua utilizzando il lessico specifico">${esc(model.obDisciplinari)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="obTrasversali" class="form-label">${labelWithTip('Obiettivi trasversali','Autonomia, collaborazione, metodo di studio, comunicazione...')}</label>
+      <textarea class="form-control" id="obTrasversali" rows="3" placeholder="Es:\n- Sviluppare la capacità di lavorare in piccolo gruppo rispettando i turni\n- Migliorare la gestione autonoma del materiale e del tempo">${esc(model.obTrasversali)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="obEssenziali" class="form-label">${labelWithTip('Obiettivi essenziali / minimi attesi','Ciò che tutti gli studenti, anche in difficoltà, devono raggiungere',true)}</label>
+      <textarea class="form-control" id="obEssenziali" rows="3" placeholder="Es:\n- Sa riconoscere i tre stati dell'acqua\n- Sa leggere una mappa concettuale guidata sull'argomento\n- Partecipa in modo attivo alle attività di gruppo con supporto">${esc(model.obEssenziali)}</textarea>
+      <div class="helper-text"><i class="bi bi-info-circle-fill"></i> Gli obiettivi essenziali garantiscono l'accessibilità per tutti. Sii specifico e raggiungibile.</div>
+    </div>
+    <div class="col-12">
+      <label for="obPersonalizzati" class="form-label">${labelWithTip('Obiettivi personalizzati','Usa descrizioni anonime: "studenti con difficoltà di lettura", "studenti con L2"...')}</label>
+      <textarea class="form-control" id="obPersonalizzati" rows="3" placeholder="Es:\nPer studenti con difficoltà di lettura: sa rispondere a domande sul testo con supporto visivo\nPer studenti con L2: sa abbinare immagine-definizione relativa ai termini chiave\nPer studenti eccellenti: sa costruire autonomamente una mappa concettuale estesa">${esc(model.obPersonalizzati)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepE(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="contIrrinunciabili" class="form-label">${labelWithTip('Contenuti irrinunciabili (nucleo essenziale)','Cosa deve essere insegnato a tutti, senza eccezioni',true)}</label>
+      <textarea class="form-control" id="contIrrinunciabili" rows="4" placeholder="Es:\n- Definizione e proprietà del triangolo\n- I tre stati fisici della materia\n- Le parti principali del discorso (nome, verbo, aggettivo)">${esc(model.contIrrinunciabili)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="contApprofondimenti" class="form-label">${labelWithTip('Approfondimenti opzionali','Contenuti aggiuntivi per chi vuole/può andare oltre')}</label>
+      <textarea class="form-control" id="contApprofondimenti" rows="2" placeholder="Es:\n- Applicazioni storiche del teorema\n- Lettura di testi letterari correlati\n- Ricerca autonoma su fonti digitali selezionate">${esc(model.contApprofondimenti)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="contSemplificare" class="form-label">${labelWithTip('Contenuti da semplificare e come','Indica cosa semplificare e in quale modo')}</label>
+      <textarea class="form-control" id="contSemplificare" rows="3" placeholder="Es:\n- Il testo espositivo → versione con frasi brevi e glossario laterale\n- Calcolo frazioni → solo denominatori 2, 4, 10\n- Scheda di lavoro → ridotta a 5 item con immagini di supporto">${esc(model.contSemplificare)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepF(){
+  const met = [
+    ['lezione_dialogata','Lezione dialogata e guidata (domande stimolo)'],
+    ['piccoli_passi','Apprendimento per piccoli passi graduali'],
+    ['cooperative','Cooperative learning (gruppi eterogenei)'],
+    ['tutoring','Tutoring tra pari (peer tutoring)'],
+    ['laboratoriale','Approccio laboratoriale'],
+    ['problem_solving','Problem solving e pensiero critico'],
+    ['flipped','Flipped classroom'],
+    ['multimodale','Didattica multimodale (testo+immagini+audio+pratica)'],
+    ['narrativa','Narrazione e storytelling'],
+    ['game_based','Gamification / gioco didattico'],
+  ];
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label class="form-label d-block mb-2">${labelWithTip('Metodologie didattiche utilizzate','Seleziona tutte le strategie che intendi adottare')}</label>
+      <div class="check-group"><div class="row g-2">
+        ${met.map(([v,l])=>`<div class="col-md-6"><div class="form-check">
+          <input class="form-check-input cb-metodologie" type="checkbox" id="m_${v}" value="${l}" ${model.metodologie.includes(l)?'checked':''}>
+          <label class="form-check-label" for="m_${v}">${l}</label>
+        </div></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="col-12">
+      <label for="metodologieNote" class="form-label">${labelWithTip('Note e integrazioni sulle metodologie','Come intendi applicare concretamente le metodologie scelte?')}</label>
+      <textarea class="form-control" id="metodologieNote" rows="3" placeholder="Es: Il cooperative learning sarà strutturato in gruppi da 3-4 studenti con ruoli fissi (lettore, scrittore, relatore).">${esc(model.metodologieNote)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepG(){
+  const str = [
+    ['semplif_consegne','Semplificazione linguistica delle consegne'],
+    ['anticip_lessico','Anticipazione del lessico chiave prima della lezione'],
+    ['mappe_schemi','Uso di mappe concettuali, schemi e immagini'],
+    ['segmentazione','Segmentazione delle attività in step piccoli e chiari'],
+    ['tempi_aggiuntivi','Tempi aggiuntivi per lo svolgimento dei compiti'],
+    ['pause','Pause strutturate e recupero energetico'],
+    ['pianificazione','Supporto alla pianificazione e all\'organizzazione'],
+    ['canali_alternativi','Canali alternativi di risposta (orale, grafico, digitale)'],
+    ['rinforzo_positivo','Rinforzo positivo frequente e personalizzato'],
+    ['mediazione_visiva','Mediazione visiva costante (immagini, video, schemi)'],
+    ['checklist','Uso di checklist e scalette per il lavoro autonomo'],
+    ['spiegazione_ind','Spiegazione individualizzata o in piccolo gruppo'],
+    ['mat_differenziati','Materiali differenziati per livello'],
+  ];
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label class="form-label d-block mb-2">${labelWithTip('Strategie inclusive e adattamenti previsti','Seleziona tutte le strategie che intendi mettere in atto')}</label>
+      <div class="check-group"><div class="row g-2">
+        ${str.map(([v,l])=>`<div class="col-md-6"><div class="form-check">
+          <input class="form-check-input cb-strInclusive" type="checkbox" id="si_${v}" value="${l}" ${model.strInclusiveChecked.includes(l)?'checked':''}>
+          <label class="form-check-label" for="si_${v}">${l}</label>
+        </div></div>`).join('')}
+      </div></div>
+      <div class="helper-text"><i class="bi bi-info-circle-fill"></i> Ogni strategia selezionata apparirà nell'output in modo descrittivo e operativo.</div>
+    </div>
+    <div class="col-12">
+      <label for="strInclusiveNote" class="form-label">${labelWithTip('Note operative e integrazioni','Dettagli su come attuerai le strategie scelte')}</label>
+      <textarea class="form-control" id="strInclusiveNote" rows="3" placeholder="Es: Le consegne saranno sempre lette ad alta voce e proiettate sulla LIM. La mappa pre-compilata sarà distribuita agli studenti con difficoltà di lettura.">${esc(model.strInclusiveNote)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepH(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="materialiComuni" class="form-label">${labelWithTip('Materiali e strumenti comuni (per tutta la classe)','Tutto ciò che useranno tutti gli studenti',true)}</label>
+      <textarea class="form-control" id="materialiComuni" rows="3" placeholder="Es:\n- Libro di testo\n- LIM e presentazioni digitali\n- Schede strutturate predisposte dal docente\n- Video didattici selezionati\n- Quaderno delle attività">${esc(model.materialiComuni)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="materialiCompensativi" class="form-label">${labelWithTip('Strumenti e materiali compensativi','Strumenti previsti per studenti con bisogni specifici')}</label>
+      <textarea class="form-control" id="materialiCompensativi" rows="4" placeholder="Es:\n- Mappe concettuali pre-compilate\n- Formulari e tabelle riassuntive\n- Sintesi vocale (software TTS)\n- Audiolezioni registrate dal docente\n- Dizionario digitale\n- Testi semplificati\n- Calcolatrice (se prevista)">${esc(model.materialiCompensativi)}</textarea>
+      <div class="helper-text"><i class="bi bi-info-circle-fill"></i> Gli strumenti compensativi non abbassano gli obiettivi: permettono di raggiungerli aggirando la difficoltà specifica.</div>
+    </div>
+  </div>`;
+}
+
+function renderStepI(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <div class="alert-warn"><i class="bi bi-info-circle me-1"></i> Le misure dispensative esentano da alcune prestazioni particolarmente difficoltose. Vanno indicate solo se coerenti con i documenti di riferimento (PDP/PEI) e se non comportano riduzione degli obiettivi essenziali.</div>
+      <label for="misureDispensative" class="form-label">${labelWithTip('Misure dispensative previste','Elenca solo quelle pertinenti e già presenti nei documenti di riferimento')}</label>
+      <textarea class="form-control" id="misureDispensative" rows="5" placeholder="Es:\n- Riduzione della quantità di esercizi (mantenendo la tipologia)\n- Dispensa dalla lettura ad alta voce davanti alla classe\n- Dispensa dalla copiatura estesa dalla lavagna\n- Valutazione centrata sui contenuti (non sull'errore ortografico) per studenti con DSA\n- Dispensa dallo studio mnemonico di date/formule (se prevista nel PDP)">${esc(model.misureDispensative)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepJ(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <div class="helper-text mb-2"><i class="bi bi-lightbulb-fill"></i> Struttura consigliata: <strong>1. Attivazione</strong> → <strong>2. Presentazione guidata</strong> → <strong>3. Esercitazione supportata</strong> → <strong>4. Attività autonoma/gruppo</strong> → <strong>5. Restituzione finale</strong></div>
+      <label for="fasi" class="form-label">${labelWithTip('Fasi operative con tempi stimati','Descrivi ogni fase con durata, attività e modalità',true)}</label>
+      <textarea class="form-control" id="fasi" rows="7" placeholder="Es:\nFASE 1 – ATTIVAZIONE (15 min): Brainstorming con domande stimolo. Visione breve video introduttivo.\nFASE 2 – PRESENTAZIONE GUIDATA (20 min): Spiegazione con LIM e mappa concettuale. Lettura guidata. Anticipazione lessico.\nFASE 3 – ESERCITAZIONE SUPPORTATA (20 min): Lavoro in coppia su scheda strutturata. Docente monitora.\nFASE 4 – LAVORO IN GRUPPO (30 min): Attività differenziate per livello. Peer tutoring.\nFASE 5 – RESTITUZIONE (15 min): Presentazione sintetica. Correzione collettiva. Sintesi con mappa.">${esc(model.fasi)}</textarea>
+    </div>
+    <div class="col-md-6">
+      <label for="supportoDocente" class="form-label">${labelWithTip('Supporto docente e/o pari tutor','In quali fasi è previsto supporto più diretto? Da chi?')}</label>
+      <textarea class="form-control" id="supportoDocente" rows="3" placeholder="Es: Ins. sostegno presente nella fase 3. Peer tutoring nelle fasi 3-4. Docente curricolare prioritariamente nelle fasi 1, 2, 5.">${esc(model.supportoDocente)}</textarea>
+    </div>
+    <div class="col-md-6">
+      <label for="differenzBES" class="form-label">${labelWithTip('Differenziazione per studenti con BES','Cosa cambia concretamente per chi ha bisogni specifici?')}</label>
+      <textarea class="form-control" id="differenzBES" rows="3" placeholder="Es: Nella fase 2, testo con carattere più grande e glossario. Nella fase 3, scheda con meno item e immagini. Nella fase 5, restituzione può essere orale.">${esc(model.differenzBES)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepK(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="verificaItinere" class="form-label">${labelWithTip('Strumenti di verifica formativa','Come monitorerai la comprensione durante lo svolgimento dell\'unità?',true)}</label>
+      <textarea class="form-control" id="verificaItinere" rows="4" placeholder="Es:\n- Domande guida durante la lezione\n- Osservazione sistematica durante il lavoro in gruppo\n- Mini-prove formative brevi (3-5 domande) a fine fase\n- Exit ticket scritto o digitale a fine lezione\n- Feedback immediato individuale e collettivo">${esc(model.verificaItinere)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="indicatoriMonitoraggio" class="form-label">${labelWithTip('Indicatori di monitoraggio','Cosa osservi per capire se il percorso sta funzionando?')}</label>
+      <textarea class="form-control" id="indicatoriMonitoraggio" rows="3" placeholder="Es:\n- Lo studente risponde alle domande guida in modo pertinente\n- Lo studente completa almeno il 70% della scheda in autonomia\n- Tutti partecipano alle attività di gruppo\n- Gli studenti con BES mostrano progressi rispetto alla baseline">${esc(model.indicatoriMonitoraggio)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepL(){
+  const cvv = [
+    ['conoscenze','Conoscenze acquisite'],
+    ['abilita','Abilità e competenze dimostrate'],
+    ['processo','Processo e impegno'],
+    ['partecipazione','Partecipazione attiva'],
+    ['autonomia','Autonomia e autoregolazione'],
+    ['collaborazione','Collaborazione e lavoro di gruppo'],
+  ];
+  const mod = [
+    ['scritta','Prova scritta'],
+    ['orale','Colloquio orale'],
+    ['pratica','Prova pratica/laboratoriale'],
+    ['prodotto','Prodotto/elaborato'],
+    ['osservazione','Osservazione sistematica'],
+    ['portfolio','Portfolio/raccolta lavori'],
+  ];
+  return `<div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label d-block mb-2">${labelWithTip('Cosa valuto','Dimensioni della valutazione')}</label>
+      <div class="check-group">${cvv.map(([v,l])=>`<div class="form-check">
+        <input class="form-check-input cb-valutare" type="checkbox" id="cv_${v}" value="${l}" ${model.cosaDiValutare.includes(l)?'checked':''}>
+        <label class="form-check-label" for="cv_${v}">${l}</label>
+      </div>`).join('')}</div>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label d-block mb-2">${labelWithTip('Modalità di valutazione','Come raccoglierò le evidenze')}</label>
+      <div class="check-group">${mod.map(([v,l])=>`<div class="form-check">
+        <input class="form-check-input cb-modalitaVal" type="checkbox" id="mv_${v}" value="${l}" ${model.modalitaValutazione.includes(l)?'checked':''}>
+        <label class="form-check-label" for="mv_${v}">${l}</label>
+      </div>`).join('')}</div>
+    </div>
+    <div class="col-12">
+      <label for="criteri" class="form-label">${labelWithTip('Criteri e indicatori (mini-rubrica)','Cosa distingue una prestazione adeguata da una eccellente o insufficiente?')}</label>
+      <textarea class="form-control" id="criteri" rows="5" placeholder="Es:\nAvanzato: Sa applicare il concetto autonomamente in contesti nuovi; elaborato completo e personale\nAdeguato: Sa descrivere e applicare in situazioni guidate; elaborato completo\nBase: Sa riconoscere con supporto; elaborato parzialmente completato\nIn sviluppo: Ha bisogno di supporto costante; raggiunge solo gli obiettivi minimi">${esc(model.criteri)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="adattamentiVal" class="form-label">${labelWithTip('Adattamenti valutativi','Modifiche coerenti con i bisogni rilevati e i documenti presenti')}</label>
+      <textarea class="form-control" id="adattamentiVal" rows="3" placeholder="Es:\n- Verifiche con testo ridotto o supportato da immagini\n- Risposta orale in alternativa allo scritto\n- Valutazione del contenuto indipendentemente dagli errori ortografici\n- Tempo aggiuntivo (fino al 30%) per studenti con PDP">${esc(model.adattamentiVal)}</textarea>
+    </div>
+  </div>`;
+}
+
+function renderStepM(){
+  return `<div class="row g-3">
+    <div class="col-12">
+      <label for="evidenze" class="form-label">${labelWithTip('Evidenze raccolte','Elaborati, prodotti o osservazioni che documentano il percorso')}</label>
+      <textarea class="form-control" id="evidenze" rows="2" placeholder="Es: Mappe degli studenti, schede completate, registrazioni presentazioni orali, osservazioni sistematiche">${esc(model.evidenze)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="funzionato" class="form-label">${labelWithTip('Cosa ha funzionato bene','Pratiche efficaci, attività riuscite, dinamiche positive')}</label>
+      <textarea class="form-control" id="funzionato" rows="2" placeholder="Es: Il lavoro in coppia ha favorito la partecipazione anche degli studenti più timidi.">${esc(model.funzionato)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="migliorare" class="form-label">${labelWithTip('Cosa migliorare','Criticità rilevate e possibili aggiustamenti per la prossima volta')}</label>
+      <textarea class="form-control" id="migliorare" rows="2" placeholder="Es: La fase 3 è durata troppo. È necessario ridurre gli item della scheda.">${esc(model.migliorare)}</textarea>
+    </div>
+    <div class="col-12">
+      <label for="prossimiPassi" class="form-label">${labelWithTip('Prossimi passi','Cosa fare dopo questa unità?')}</label>
+      <textarea class="form-control" id="prossimiPassi" rows="2" placeholder="Es: Consolidamento individuale con esercizi differenziati. Introduzione del modulo successivo.">${esc(model.prossimiPassi)}</textarea>
+    </div>
+    <hr class="section-divider">
+    <div class="col-12">
+      <div class="alert-warn"><i class="bi bi-check2-circle me-1"></i> Ottimo! Hai compilato tutte le sezioni. Clicca <strong>"Genera / Aggiorna UdA"</strong> per produrre il documento completo.</div>
+    </div>
+  </div>`;
+}
+
+// ══ RENDER ENGINE ══
+function renderStep(idx){
+  const step = steps[idx];
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="step-card" role="tabpanel" aria-labelledby="step-tab-${idx}">
+      <div class="step-title"><i class="bi ${step.icon} me-2" aria-hidden="true"></i>${step.title}</div>
+      <p class="step-subtitle">${step.subtitle}</p>
+      <div id="validation-alert" class="d-none"></div>
+      ${step.render()}
+      <div class="nav-btns">
+        <div>${idx > 0 ? `<button class="btn-outline-custom" onclick="goStep(${idx-1})"><i class="bi bi-arrow-left me-1"></i>Indietro</button>` : ''}</div>
+        <div>${idx < steps.length-1
+          ? `<button class="btn-primary-custom" onclick="goStep(${idx+1})">Avanti <i class="bi bi-arrow-right ms-1"></i></button>`
+          : `<button class="btn-accent" onclick="generateUDA()"><i class="bi bi-lightning-charge-fill me-1"></i>Genera UdA</button>`
+        }</div>
+      </div>
+    </div>`;
+  // attach autosave to all inputs
+  app.querySelectorAll('input,select,textarea').forEach(el=>{
+    el.addEventListener('change', saveToStorage);
+    el.addEventListener('input', saveToStorage);
+  });
+}
+
+function updateNav(){
+  const list = document.getElementById('stepList');
+  list.innerHTML = '';
+  steps.forEach((s,i)=>{
+    const isDone = i < currentStep;
+    const isActive = i === currentStep;
+    const btn = document.createElement('button');
+    btn.className = `step-item${isActive?' active':''}${isDone?' done':''}`;
+    btn.setAttribute('role','tab');
+    btn.setAttribute('aria-selected', isActive.toString());
+    btn.setAttribute('id',`step-tab-${i}`);
+    btn.setAttribute('aria-label', `Passo ${i+1}: ${s.title}`);
+    btn.innerHTML = `<span class="step-bubble" aria-hidden="true">${isDone?'<i class="bi bi-check"></i>':i+1}</span><span class="step-label">${s.label}</span>`;
+    btn.onclick = ()=>goStep(i);
+    list.appendChild(btn);
+    if(i<steps.length-1){
+      const conn=document.createElement('div'); conn.className='step-connector'; conn.setAttribute('aria-hidden','true');
+      list.appendChild(conn);
+    }
+  });
+  const pct = Math.round((currentStep/(steps.length-1))*100);
+  const bar = document.getElementById('progressBar');
+  bar.style.width = pct+'%';
+  bar.setAttribute('aria-valuenow', pct);
+}
+
+function goStep(idx){
+  collectData();
+  saveToStorage();
+  currentStep = idx;
+  updateNav();
+  renderStep(idx);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══ GENERATE UDA ══
+function generateUDA(){
+  collectData();
+  const warnings = validate();
+  const html = buildHTMLOutput();
+  const md = buildMarkdownOutput();
+
+  const panel = document.getElementById('outputPanel');
+  panel.style.display='block';
+  document.getElementById('output-preview').innerHTML = html;
+  document.getElementById('output-markdown').value = md;
+
+  const va = document.getElementById('validation-alert');
+  if(va && warnings.length){
+    va.className='alert-warn mb-3';
+    va.innerHTML=`<strong><i class="bi bi-exclamation-triangle me-1"></i>Campi consigliati vuoti:</strong><ul class="mb-0 mt-1">${warnings.map(w=>`<li>${w}</li>`).join('')}</ul><small>L'UdA è stata generata ugualmente con i dati disponibili.</small>`;
+  } else if(va){ va.className='d-none'; }
+
+  saveToStorage();
+  setTimeout(()=>{ document.getElementById('outputPanel').scrollIntoView({behavior:'smooth',block:'start'}); },100);
+}
+
+// ══ OUTPUT BUILDERS ══
+function ordineLabel(o){ return {infanzia:'Scuola dell\'Infanzia',primaria:'Scuola Primaria',sec1:'Scuola Secondaria I grado',sec2:'Scuola Secondaria II grado'}[o]||o; }
+function pdpLabel(p){ return {presenti:'Sì, presenti',non_presenti:'Non presenti',in_redazione:'In fase di redazione',non_specificato:'Non specificato'}[p]||p; }
+
+function buildHTMLOutput(){
+  const m = model;
+  const today = new Date().toLocaleDateString('it-IT');
+  if(!m.titolo && !m.discipline){ return `<div class="empty-state"><i class="bi bi-file-earmark-text d-block"></i><p>Nessun dato inserito. Compila il wizard e clicca "Genera UdA".</p></div>`; }
+  let h = `<div>`;
+  // Title block
+  h += `<div style="text-align:center;padding:16px 0 12px;border-bottom:3px solid #e8a020;margin-bottom:24px">
+    <div style="font-family:'Lora',serif;font-size:1.5rem;font-weight:700;color:#1a3a5c">${esc(m.titolo)||'[Titolo non inserito]'}</div>
+    <div style="color:#5a6a7a;margin-top:5px;font-size:0.88rem">${[m.ordineScuola?ordineLabel(m.ordineScuola):null, m.classeSezione?esc(m.classeSezione):null, m.discipline?esc(m.discipline):null].filter(Boolean).join(' &bull; ')}</div>
+    <div style="font-size:0.75rem;color:#aaa;margin-top:3px">Documento generato il ${today}</div>
+  </div>`;
+
+  h += `<h2>A. Dati dell'Unità Didattica</h2>
+  <table>
+    <tr><th>Campo</th><th>Valore</th></tr>
+    <tr><td><strong>Titolo</strong></td><td>${esc(m.titolo)||'—'}</td></tr>
+    <tr><td><strong>Ordine di scuola</strong></td><td>${m.ordineScuola?ordineLabel(m.ordineScuola):'—'}</td></tr>
+    <tr><td><strong>Classe / Sezione</strong></td><td>${esc(m.classeSezione)||'—'}</td></tr>
+    <tr><td><strong>Disciplina/e</strong></td><td>${esc(m.discipline)||'—'}</td></tr>
+    <tr><td><strong>Argomento / Tema</strong></td><td>${esc(m.argomento)||'—'}</td></tr>
+    <tr><td><strong>Durata</strong></td><td>${[m.durataOre?m.durataOre+' ore':null,m.nLezioni?m.nLezioni+' lezioni':null,m.periodo?esc(m.periodo):null].filter(Boolean).join(' &bull; ')||'—'}</td></tr>
+    <tr><td><strong>Contesto / Risorse</strong></td><td>${esc(m.contesto)||'—'}</td></tr>
+  </table>`;
+
+  h += `<h2>B. Profilo della Classe e BES</h2>`;
+  if(m.descClasse){ h += `<h3>Descrizione del gruppo classe</h3><div class="section-block">${nl2p(m.descClasse)}</div>`; }
+  if(m.bisogniChecked.length){ h += `<h3>Bisogni educativi rilevati</h3><p>${m.bisogniChecked.map(b=>`<span class="tag-bes">${esc(b.replace(/_/g,' '))}</span>`).join('')}</p>`; }
+  if(m.bisogniNote){ h += `<div class="section-block">${nl2p(m.bisogniNote)}</div>`; }
+  h += `<p><strong>PDP / PEI:</strong> ${pdpLabel(m.pdpPresente)}${m.pdpIndicazioni?` — <em>${esc(m.pdpIndicazioni)}</em>`:''}</p>`;
+  if(m.puntiForza){ h += `<h3>Punti di forza e risorse</h3><div class="section-block">${nl2p(m.puntiForza)}</div>`; }
+
+  h += `<h2>C. Prerequisiti</h2>`;
+  if(m.prerequisiti){ h += `<h3>Conoscenze e abilità richieste</h3><ul>${nl2li(m.prerequisiti)}</ul>`; }
+  else { h += `<p><em>Indica le conoscenze pregresse necessarie per affrontare l'unità.</em></p>`; }
+  if(m.recupero){ h += `<h3>Azioni di recupero e semplificazione</h3><div class="section-block">${nl2p(m.recupero)}</div>`; }
+
+  h += `<h2>D. Obiettivi di Apprendimento</h2>`;
+  if(m.obDisciplinari){ h += `<h3>Obiettivi disciplinari</h3><ul>${nl2li(m.obDisciplinari)}</ul>`; }
+  if(m.obTrasversali){ h += `<h3>Obiettivi trasversali</h3><ul>${nl2li(m.obTrasversali)}</ul>`; }
+  if(m.obEssenziali){ h += `<h3>Obiettivi essenziali / minimi attesi <em style="font-size:0.8em;font-weight:400;color:#5a6a7a">(accessibili a tutti)</em></h3><ul>${nl2li(m.obEssenziali)}</ul>`; }
+  if(m.obPersonalizzati){ h += `<h3>Obiettivi personalizzati</h3><ul>${nl2li(m.obPersonalizzati)}</ul>`; }
+
+  h += `<h2>E. Contenuti e Nuclei Fondanti</h2>`;
+  if(m.contIrrinunciabili){ h += `<h3>Contenuti irrinunciabili</h3><ul>${nl2li(m.contIrrinunciabili)}</ul>`; }
+  if(m.contApprofondimenti){ h += `<h3>Approfondimenti opzionali</h3><ul>${nl2li(m.contApprofondimenti)}</ul>`; }
+  if(m.contSemplificare){ h += `<h3>Contenuti da semplificare e come</h3><ul>${nl2li(m.contSemplificare)}</ul>`; }
+
+  h += `<h2>F. Metodologie Didattiche</h2>`;
+  if(m.metodologie.length){ h += `<ul>${m.metodologie.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`; }
+  if(m.metodologieNote){ h += `<div class="section-block">${nl2p(m.metodologieNote)}</div>`; }
+
+  h += `<h2>G. Strategie Inclusive e Personalizzazione</h2>`;
+  if(m.strInclusiveChecked.length){ h += `<ul>${m.strInclusiveChecked.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`; }
+  if(m.strInclusiveNote){ h += `<div class="section-block">${nl2p(m.strInclusiveNote)}</div>`; }
+
+  h += `<h2>H. Strumenti e Materiali</h2>
+  <table>
+    <tr><th>Materiali comuni</th><th>Strumenti compensativi</th></tr>
+    <tr>
+      <td><ul>${nl2li(m.materialiComuni)||'<li>—</li>'}</ul></td>
+      <td><ul>${nl2li(m.materialiCompensativi)||'<li>—</li>'}</ul></td>
+    </tr>
+  </table>`;
+
+  if(m.misureDispensative){ h += `<h2>I. Misure Dispensative</h2><ul>${nl2li(m.misureDispensative)}</ul>`; }
+
+  h += `<h2>J. Articolazione delle Attività</h2>`;
+  if(m.fasi){ h += nl2p(m.fasi); }
+  if(m.supportoDocente){ h += `<h3>Supporto docente e pari tutor</h3><div class="section-block">${nl2p(m.supportoDocente)}</div>`; }
+  if(m.differenzBES){ h += `<h3>Differenziazione per studenti con BES</h3><div class="section-block" style="border-color:#2e7d5a">${nl2p(m.differenzBES)}</div>`; }
+
+  h += `<h2>K. Verifica in Itinere e Monitoraggio</h2>`;
+  if(m.verificaItinere){ h += `<h3>Strumenti di verifica formativa</h3><ul>${nl2li(m.verificaItinere)}</ul>`; }
+  if(m.indicatoriMonitoraggio){ h += `<h3>Indicatori di monitoraggio</h3><ul>${nl2li(m.indicatoriMonitoraggio)}</ul>`; }
+
+  h += `<h2>L. Valutazione</h2>`;
+  if(m.cosaDiValutare.length||m.modalitaValutazione.length){
+    h += `<table><tr><th>Cosa valuto</th><th>Modalità</th></tr><tr>
+      <td><ul>${m.cosaDiValutare.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul></td>
+      <td><ul>${m.modalitaValutazione.map(x=>`<li>${esc(x)}</li>`).join('')||'<li>—</li>'}</ul></td>
+    </tr></table>`;
+  }
+  if(m.criteri){ h += `<h3>Criteri e indicatori (mini-rubrica)</h3><ul>${nl2li(m.criteri)}</ul>`; }
+  if(m.adattamentiVal){ h += `<h3>Adattamenti valutativi</h3><ul>${nl2li(m.adattamentiVal)}</ul>`; }
+
+  h += `<h2>M. Documentazione e Osservazioni Finali</h2>`;
+  if(m.evidenze){ h += `<h3>Evidenze raccolte</h3><div class="section-block">${nl2p(m.evidenze)}</div>`; }
+  if(m.funzionato){ h += `<h3>Cosa ha funzionato</h3><div class="section-block">${nl2p(m.funzionato)}</div>`; }
+  if(m.migliorare){ h += `<h3>Cosa migliorare</h3><div class="section-block">${nl2p(m.migliorare)}</div>`; }
+  if(m.prossimiPassi){ h += `<h3>Prossimi passi</h3><div class="section-block">${nl2p(m.prossimiPassi)}</div>`; }
+
+  h += `<div style="text-align:center;margin-top:40px;padding-top:16px;border-top:1px solid #d0dae8;color:#aaa;font-size:0.75rem">
+    Documento generato con <strong>UdA Inclusiva</strong> — ${today}
+  </div></div>`;
+  return h;
+}
+
+function buildMarkdownOutput(){
+  const m = model;
+  const today = new Date().toLocaleDateString('it-IT');
+  let md = `# ${m.titolo||'[Titolo UdA]'}\n\n`;
+  md += `**Ordine:** ${m.ordineScuola?ordineLabel(m.ordineScuola):'—'}  |  **Classe:** ${m.classeSezione||'—'}  |  **Disciplina/e:** ${m.discipline||'—'}\n`;
+  md += `**Periodo:** ${m.periodo||'—'}  |  **Durata:** ${m.durataOre||'—'} ore (${m.nLezioni||'—'} lezioni)\n\n---\n\n`;
+  md += `## A. Dati dell'Unità\n\n`;
+  md += `| Campo | Valore |\n|---|---|\n`;
+  md += `| Argomento | ${m.argomento||'—'} |\n`;
+  md += `| Contesto | ${m.contesto||'—'} |\n\n`;
+  md += `## B. Profilo della Classe e BES\n\n${m.descClasse||'—'}\n\n`;
+  if(m.bisogniChecked.length) md += `**Bisogni rilevati:** ${m.bisogniChecked.join(', ')}\n\n`;
+  if(m.bisogniNote) md += `${m.bisogniNote}\n\n`;
+  md += `**PDP/PEI:** ${pdpLabel(m.pdpPresente)}${m.pdpIndicazioni?' — '+m.pdpIndicazioni:''}\n\n`;
+  if(m.puntiForza) md += `**Punti di forza:** ${m.puntiForza}\n\n`;
+  md += `## C. Prerequisiti\n\n${m.prerequisiti||'—'}\n\n`;
+  if(m.recupero) md += `**Recupero/semplificazione:** ${m.recupero}\n\n`;
+  md += `## D. Obiettivi di Apprendimento\n\n`;
+  if(m.obDisciplinari) md += `### Disciplinari\n${m.obDisciplinari}\n\n`;
+  if(m.obTrasversali) md += `### Trasversali\n${m.obTrasversali}\n\n`;
+  if(m.obEssenziali) md += `### Essenziali / Minimi attesi\n${m.obEssenziali}\n\n`;
+  if(m.obPersonalizzati) md += `### Personalizzati\n${m.obPersonalizzati}\n\n`;
+  md += `## E. Contenuti\n\n`;
+  if(m.contIrrinunciabili) md += `### Irrinunciabili\n${m.contIrrinunciabili}\n\n`;
+  if(m.contApprofondimenti) md += `### Approfondimenti\n${m.contApprofondimenti}\n\n`;
+  if(m.contSemplificare) md += `### Da semplificare\n${m.contSemplificare}\n\n`;
+  md += `## F. Metodologie\n\n${m.metodologie.map(x=>`- ${x}`).join('\n')||'—'}\n\n${m.metodologieNote||''}\n\n`;
+  md += `## G. Strategie Inclusive\n\n${m.strInclusiveChecked.map(x=>`- ${x}`).join('\n')||'—'}\n\n${m.strInclusiveNote||''}\n\n`;
+  md += `## H. Materiali\n\n**Comuni:**\n${m.materialiComuni||'—'}\n\n**Compensativi:**\n${m.materialiCompensativi||'—'}\n\n`;
+  if(m.misureDispensative) md += `## I. Misure Dispensative\n\n${m.misureDispensative}\n\n`;
+  md += `## J. Articolazione delle Attività\n\n${m.fasi||'—'}\n\n`;
+  if(m.supportoDocente) md += `**Supporto:** ${m.supportoDocente}\n\n`;
+  if(m.differenzBES) md += `**Differenziazione BES:** ${m.differenzBES}\n\n`;
+  md += `## K. Verifica in Itinere\n\n${m.verificaItinere||'—'}\n\n`;
+  if(m.indicatoriMonitoraggio) md += `**Indicatori:** ${m.indicatoriMonitoraggio}\n\n`;
+  md += `## L. Valutazione\n\n`;
+  if(m.cosaDiValutare.length) md += `**Cosa valuto:** ${m.cosaDiValutare.join(', ')}\n\n`;
+  if(m.modalitaValutazione.length) md += `**Modalità:** ${m.modalitaValutazione.join(', ')}\n\n`;
+  if(m.criteri) md += `**Criteri (mini-rubrica):**\n${m.criteri}\n\n`;
+  if(m.adattamentiVal) md += `**Adattamenti valutativi:** ${m.adattamentiVal}\n\n`;
+  md += `## M. Riflessione Finale\n\n`;
+  if(m.evidenze) md += `**Evidenze:** ${m.evidenze}\n\n`;
+  if(m.funzionato) md += `**Cosa ha funzionato:** ${m.funzionato}\n\n`;
+  if(m.migliorare) md += `**Da migliorare:** ${m.migliorare}\n\n`;
+  if(m.prossimiPassi) md += `**Prossimi passi:** ${m.prossimiPassi}\n\n`;
+  md += `---\n*Generato con UdA Inclusiva — ${today}*\n`;
+  return md;
+}
+
+// ══ TABS ══
+function switchTab(tab){
+  const preview = document.getElementById('output-preview');
+  const markdown = document.getElementById('output-markdown');
+  const tp = document.getElementById('tab-preview');
+  const tm = document.getElementById('tab-markdown');
+  if(tab==='preview'){
+    preview.style.display='block'; markdown.style.display='none';
+    tp.classList.add('active'); tm.classList.remove('active');
+  } else {
+    preview.style.display='none'; markdown.style.display='block';
+    tm.classList.add('active'); tp.classList.remove('active');
+  }
+}
+
+// ══ COPY OUTPUT ══
+function copyOutput(){
+  collectData();
+  const md = buildMarkdownOutput();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(md).then(()=>showToast('✓ Testo copiato negli appunti!','success')).catch(()=>fallbackCopy(md));
+  } else { fallbackCopy(md); }
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  showToast('✓ Testo copiato!','success');
+}
+
+// ══ PRINT PDF ══
+function printPDF(){ window.print(); }
+
+// ══ RESET ══
+function resetAll(){
+  if(!confirm('Sei sicuro di voler azzerare tutti i dati? L\'operazione non è reversibile.')) return;
+  Object.keys(model).forEach(k=>{ model[k] = Array.isArray(model[k])?[]:'' ; });
+  model.pdpPresente = 'non_specificato';
+  try { localStorage.removeItem('uda_inclusiva_v1'); } catch(e){}
+  document.getElementById('outputPanel').style.display='none';
+  goStep(0);
+  showToast('Tutti i dati sono stati azzerati.','warning');
+}
+
+// ══ TOAST ══
+function showToast(msg, type='success'){
+  let t = document.getElementById('toast-wrap');
+  if(!t){ t=document.createElement('div'); t.id='toast-wrap'; t.style.cssText='position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;'; document.body.appendChild(t); }
+  const el = document.createElement('div');
+  const colors = {success:'#2e7d5a',warning:'#c87020',error:'#c0392b'};
+  el.style.cssText=`background:${colors[type]||colors.success};color:#fff;padding:11px 18px;border-radius:8px;font-size:0.85rem;box-shadow:0 4px 16px rgba(0,0,0,0.18);opacity:0;transition:opacity 0.3s;max-width:280px;`;
+  el.textContent=msg; t.appendChild(el);
+  setTimeout(()=>el.style.opacity='1',10);
+  setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),300); },3200);
+}
+
+// ══ INIT ══
+loadFromStorage();
+updateNav();
+renderStep(0);
+document.getElementById('autosave-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleAutosave(); }});
+</script>
+</body>
+</html>
